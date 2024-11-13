@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
-101	0	
-=======
 101	1	홍길동	
->>>>>>> Stashed changes
 102	0	
 103	0	
 104	0	
