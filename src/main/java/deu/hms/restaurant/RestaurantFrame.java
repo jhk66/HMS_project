@@ -105,7 +105,8 @@ public class RestaurantFrame extends javax.swing.JFrame {
         totalPriceField.setEditable(false);
         totalPriceField.setBackground(new java.awt.Color(255, 255, 255));
         totalPriceField.setAutoscrolls(false);
-        totalPriceField.setEnabled(false);
+        totalPriceField.setDisabledTextColor(new java.awt.Color(0, 0, 0));
+        totalPriceField.setFocusable(false);
         totalPriceField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 totalPriceFieldActionPerformed(evt);
