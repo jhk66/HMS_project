@@ -4,6 +4,8 @@
  */
 package deu.hms.restaurant;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -11,9 +13,12 @@ import javax.swing.table.DefaultTableModel;
  * @author choun
  */
 public class RestaurantFrame extends javax.swing.JFrame {
-    
+
     private String part = "식사";
     private int totalPrice = 0;
+    private String selectRoom = null;
+    private String clientName = null;
+    private String payType = null;
 
     /**
      * Creates new form RestaurantFrame
@@ -21,6 +26,10 @@ public class RestaurantFrame extends javax.swing.JFrame {
     public RestaurantFrame() {
         initComponents();
         loadServiceList();
+        DefaultComboBoxModel roomNumModel = (DefaultComboBoxModel) roomListComboBox.getModel();
+        RoomNumLoad roomNumLoad = new RoomNumLoad(roomNumModel);
+        roomNumModel.setSelectedItem(null);
+        payTypeComboBox.getModel().setSelectedItem(null);
     }
 
     /**
@@ -79,9 +88,6 @@ public class RestaurantFrame extends javax.swing.JFrame {
             }
         });
         jScrollPane2.setViewportView(orderTable);
-        if (orderTable.getColumnModel().getColumnCount() > 0) {
-            orderTable.getColumnModel().getColumn(2).setPreferredWidth(35);
-        }
 
         jLabel3.setFont(new java.awt.Font("맑은 고딕", 0, 18)); // NOI18N
         jLabel3.setText("주문 목록");
@@ -97,6 +103,8 @@ public class RestaurantFrame extends javax.swing.JFrame {
         jLabel5.setText("총합");
 
         totalPriceField.setEditable(false);
+        totalPriceField.setBackground(new java.awt.Color(255, 255, 255));
+        totalPriceField.setAutoscrolls(false);
         totalPriceField.setEnabled(false);
         totalPriceField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -107,7 +115,13 @@ public class RestaurantFrame extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("맑은 고딕", 0, 14)); // NOI18N
         jLabel6.setText("결제");
 
-        payTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        payTypeComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "객실 청구", "신용카드", "수표", "현금" }));
+        payTypeComboBox.setSelectedIndex(-1);
+        payTypeComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                payTypeComboBoxActionPerformed(evt);
+            }
+        });
 
         payButton.setText("결제하기");
         payButton.setToolTipText("");
@@ -147,7 +161,7 @@ public class RestaurantFrame extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                     .addComponent(payTypeComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(payButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE))
+                                    .addComponent(payButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel7)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -192,9 +206,8 @@ public class RestaurantFrame extends javax.swing.JFrame {
         );
 
         jLabel2.setFont(new java.awt.Font("맑은 고딕", 0, 18)); // NOI18N
-        jLabel2.setText("호실");
+        jLabel2.setText("객실");
 
-        roomListComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         roomListComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 roomListComboBoxActionPerformed(evt);
@@ -235,6 +248,11 @@ public class RestaurantFrame extends javax.swing.JFrame {
         jScrollPane3.setViewportView(nameTextPane);
 
         endButton.setText("닫기");
+        endButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                endButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -261,11 +279,11 @@ public class RestaurantFrame extends javax.swing.JFrame {
                                 .addGap(128, 128, 128)
                                 .addComponent(jLabel4)))
                         .addGap(18, 18, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(roomListComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(roomListComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel8)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -301,82 +319,133 @@ public class RestaurantFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void loadServiceList(){
+    private void loadServiceList() {
         DefaultTableModel menuModel = (DefaultTableModel) menuTable.getModel();
-        
         new MenuLoad(menuModel, part);
+
+        selectRoom = null;
+        payType = null;
         
         totalPrice = 0;
         totalPriceField.setText(String.valueOf(totalPrice));
     }
-    
+
     private void addMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addMenuButtonActionPerformed
         // TODO add your handling code here:
-        int selectRow = menuTable.getSelectedRow(); // menuLoadTable에서 선택된 메뉴 가져오기
-        
-        String menuName = menuTable.getValueAt(selectRow, 0).toString(); // 메뉴이름 불러오기
-        String menuPrice = menuTable.getValueAt(selectRow, 1).toString(); // 메뉴가격 불러오기
-        
-        // orderTable에 메뉴가 있는지 확인
-        DefaultTableModel orderModel = (DefaultTableModel) orderTable.getModel();
-        boolean isin = false;
-        int inRow = -1;
-        
-        for(int i = 0; i < orderTable.getRowCount(); i++){
-            if(orderModel.getValueAt(i, 0).equals(menuName)){
-                isin = true;
-                inRow = i;
-                break;
+        if (selectRoom != null) {
+            int selectRow = menuTable.getSelectedRow(); // menuLoadTable에서 선택된 메뉴 가져오기
+
+            String menuName = menuTable.getValueAt(selectRow, 0).toString(); // 메뉴이름 불러오기
+            String menuPrice = menuTable.getValueAt(selectRow, 1).toString(); // 메뉴가격 불러오기
+
+            // orderTable에 메뉴가 있는지 확인
+            DefaultTableModel orderModel = (DefaultTableModel) orderTable.getModel();
+            boolean isin = false;
+            int inRow = -1;
+
+            for (int i = 0; i < orderTable.getRowCount(); i++) {
+                if (orderModel.getValueAt(i, 0).equals(menuName)) {
+                    isin = true;
+                    inRow = i;
+                    break;
+                }
             }
+
+            if (isin) { // 선택한 메뉴가 이미 메뉴가 orderTable에 있다면 수량만 1 증가
+                int mount = Integer.parseInt(orderModel.getValueAt(inRow, 2).toString());
+                orderModel.setValueAt(mount + 1, inRow, 2);
+            } else { // 메뉴가 orderTable에 없다면 새로운 행 추가
+                orderModel.addRow(new Object[]{menuName, menuPrice, 1});
+            }
+
+            // 총액에 추가하기
+            int price = Integer.parseInt(String.valueOf(menuTable.getValueAt(selectRow, 1)));
+            totalPrice += price;
+            totalPriceField.setText(String.valueOf(totalPrice));
+        } else {
+            JOptionPane.showMessageDialog(null, "객실을 선택해주세요", "오류", JOptionPane.ERROR_MESSAGE);
         }
-        
-        if(isin){ // 선택한 메뉴가 이미 메뉴가 orderTable에 있다면 수량만 1 증가
-            int mount = Integer.parseInt(orderModel.getValueAt(inRow, 2).toString());
-            orderModel.setValueAt(mount + 1, inRow, 2);
-        }
-        else{ // 메뉴가 orderTable에 없다면 새로운 행 추가
-            orderModel.addRow(new Object[]{menuName, menuPrice, 1});
-        }
-        
-        // 총액에 추가하기
-        int price = Integer.parseInt(String.valueOf(menuTable.getValueAt(selectRow, 1)));
-        totalPrice += price;
-        totalPriceField.setText(String.valueOf(totalPrice));
     }//GEN-LAST:event_addMenuButtonActionPerformed
 
     private void deleteMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteMenuButtonActionPerformed
         // TODO add your handling code here:
-        DefaultTableModel ordermodel = (DefaultTableModel) orderTable.getModel();
-        
-        int selectRow = orderTable.getSelectedRow(); // orderTable에서 선택된 메뉴가져오기
-        
-        // 총액에서 감소하기
-        int price = Integer.parseInt(String.valueOf(orderTable.getValueAt(selectRow, 1)));
-        totalPrice -= price;
-        totalPriceField.setText(String.valueOf(totalPrice));
-        
-        int mount = Integer.parseInt(String.valueOf(orderTable.getValueAt(selectRow, 2))); // 메뉴의 수량 불러오기
-        
-        if(mount > 1){ // 메뉴의 수량이 1 이상이면 하나 줄이기
-            orderTable.setValueAt(mount - 1, selectRow, 2);
-        }
-        else{ // 메뉴의 수량이 1 이면 행지우기
-            ordermodel.removeRow(selectRow);
+        if (selectRoom != null) {
+            DefaultTableModel ordermodel = (DefaultTableModel) orderTable.getModel();
+
+            int selectRow = orderTable.getSelectedRow(); // orderTable에서 선택된 메뉴가져오기
+
+            // 총액에서 감소하기
+            int price = Integer.parseInt(String.valueOf(orderTable.getValueAt(selectRow, 1)));
+            totalPrice -= price;
+            totalPriceField.setText(String.valueOf(totalPrice));
+
+            int mount = Integer.parseInt(String.valueOf(orderTable.getValueAt(selectRow, 2))); // 메뉴의 수량 불러오기
+
+            if (mount > 1) { // 메뉴의 수량이 1 이상이면 하나 줄이기
+                orderTable.setValueAt(mount - 1, selectRow, 2);
+            } else { // 메뉴의 수량이 1 이면 행지우기
+                ordermodel.removeRow(selectRow);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "객실을 선택해주세요", "오류", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_deleteMenuButtonActionPerformed
+
+    private void payButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_payButtonActionPerformed
+        // TODO add your handling code here:
+        if (totalPrice != 0 && payType != null){
+            
+            
+            if(payType.equals("객실 청구")){
+                JOptionPane.showMessageDialog(null, "객실로 결제가 청구되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
+            }
+            else{
+                JOptionPane.showMessageDialog(null, "결제가 완료되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
+            }
+            new SaveOrder(orderTable, selectRoom, part ,payType, totalPrice);
+            initialization();
+            
+        }
+        else if(payType == null){
+            JOptionPane.showMessageDialog(null, "결제 방식을 선택해주세요", "오류", JOptionPane.ERROR_MESSAGE);
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "결제할 금액이 없습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_payButtonActionPerformed
+
+    private void roomListComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roomListComboBoxActionPerformed
+        // TODO add your handling code here:
+        selectRoom = (String) roomListComboBox.getSelectedItem();
+        RoomNumLoad clientName = new RoomNumLoad();
+        nameTextPane.setText(clientName.getClientName(selectRoom));
+    }//GEN-LAST:event_roomListComboBoxActionPerformed
+
+    private void endButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_endButtonActionPerformed
+        // TODO add your handling code here:
+        dispose();
+    }//GEN-LAST:event_endButtonActionPerformed
+
+    private void payTypeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_payTypeComboBoxActionPerformed
+        // TODO add your handling code here:
+        payType = (String) payTypeComboBox.getSelectedItem();
+    }//GEN-LAST:event_payTypeComboBoxActionPerformed
 
     private void totalPriceFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_totalPriceFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_totalPriceFieldActionPerformed
 
-    private void payButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_payButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_payButtonActionPerformed
-
-    private void roomListComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roomListComboBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_roomListComboBoxActionPerformed
-
+    private void initialization(){
+        DefaultTableModel orderTableModel = (DefaultTableModel) orderTable.getModel();
+        orderTableModel.setNumRows(0);
+        roomListComboBox.getModel().setSelectedItem(null);
+        payTypeComboBox.getModel().setSelectedItem(null);
+        selectRoom = null;
+        payType = null;
+        totalPrice = 0;
+        totalPriceField.setText(String.valueOf(totalPrice));
+    }
+    
     /**
      * @param args the command line arguments
      */
