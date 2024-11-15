@@ -6,12 +6,15 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HotelCheckInOutSystem extends JFrame {
     private JTextField searchField;
     private JTable reservationTable;
     private DefaultTableModel tableModel;
-    private JComboBox<String> searchOptions;
+    private Map<String, String[]> roomData; // 객실 정보 저장 (객실번호 -> [예약상태, 고객명])
 
     public HotelCheckInOutSystem() {
         // 프레임 설정
@@ -20,14 +23,18 @@ public class HotelCheckInOutSystem extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        // 객실 데이터 불러오기
+        roomData = new HashMap<>();
+        loadRoomData();
+
         // 상단 검색 패널 설정
         JPanel searchPanel = new JPanel(new BorderLayout());
         JLabel titleLabel = new JLabel("체크인/체크아웃", JLabel.CENTER);
-        titleLabel.setFont(new Font("맑은 고딕", Font.BOLD, 20));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
         searchPanel.add(titleLabel, BorderLayout.NORTH);
 
         JPanel searchBar = new JPanel(new BorderLayout());
-        searchOptions = new JComboBox<>(new String[]{"예약 번호", "고객명"}); // 예약 번호와 고객명만 선택 가능
+        JComboBox<String> searchOptions = new JComboBox<>(new String[]{"예약번호", "고객명"});
         searchField = new JTextField();
         JButton searchButton = new JButton("검색");
         searchBar.add(searchOptions, BorderLayout.WEST);
@@ -36,14 +43,9 @@ public class HotelCheckInOutSystem extends JFrame {
         searchPanel.add(searchBar, BorderLayout.SOUTH);
 
         // 예약 테이블 설정
-        String[] columnNames = {"예약 날짜", "예약 번호", "고객명", "전화번호", "예약 인원", "객실 정보", "체크인/아웃"};
+        String[] columnNames = {"객실 번호", "예약 상태", "고객명"};
         tableModel = new DefaultTableModel(columnNames, 0);
         reservationTable = new JTable(tableModel);
-
-        // 더미 데이터 추가
-        tableModel.addRow(new Object[]{"2024-11-08", "001", "홍길동", "010-1234-5678", "2명", "101호", "체크인 대기"});
-        tableModel.addRow(new Object[]{"2024-11-09", "002", "김철수", "010-9876-5432", "1명", "102호", "체크인 완료"});
-
         JScrollPane tableScrollPane = new JScrollPane(reservationTable);
 
         // 하단 버튼 패널 설정
@@ -59,116 +61,85 @@ public class HotelCheckInOutSystem extends JFrame {
         add(buttonPanel, BorderLayout.SOUTH);
 
         // 검색 버튼 동작 설정
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String searchText = searchField.getText().trim();
-                int searchColumn = searchOptions.getSelectedIndex() + 1; // 1은 예약 번호, 2는 고객명
-                boolean found = false;
-
-                // 테이블에서 선택된 열을 기준으로 검색
-                if (!searchText.isEmpty()) {
-                    for (int i = 0; i < tableModel.getRowCount(); i++) {
-                        if (tableModel.getValueAt(i, searchColumn).toString().contains(searchText)) {
-                            reservationTable.setRowSelectionInterval(i, i);
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    if (!found) {
-                        JOptionPane.showMessageDialog(null, "정보를 찾을 수 없습니다: " + searchText);
-                    }
-                }
-            }
+        searchButton.addActionListener(e -> {
+            String searchValue = searchField.getText().trim();
+            String searchOption = (String) searchOptions.getSelectedItem();
+            searchRoomData(searchOption, searchValue);
         });
 
         // 체크인 버튼 동작 설정
-        checkInButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selectedRow = reservationTable.getSelectedRow();
-                if (selectedRow != -1) {
-                    tableModel.setValueAt("체크인 완료", selectedRow, 6);
+        checkInButton.addActionListener(e -> {
+            String input = JOptionPane.showInputDialog("예약번호나 고객명을 입력하세요:");
+            if (input != null && !input.trim().isEmpty()) {
+                searchRoomData("예약번호", input);  // 예약번호로 먼저 검색
+                if (reservationTable.getRowCount() == 0) {
+                    searchRoomData("고객명", input);  // 일치하는 예약번호가 없으면 고객명으로 검색
+                }
+                if (reservationTable.getRowCount() > 0) {
+                    tableModel.setValueAt("체크인 완료", 0, 1); // 검색된 첫 번째 결과의 상태를 체크인 완료로 설정
                     JOptionPane.showMessageDialog(null, "체크인이 완료되었습니다.");
                 } else {
-                    JOptionPane.showMessageDialog(null, "체크인할 예약을 선택하세요.");
+                    JOptionPane.showMessageDialog(null, "예약 정보를 찾을 수 없습니다.");
                 }
             }
         });
 
         // 체크아웃 버튼 동작 설정
-        checkOutButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selectedRow = reservationTable.getSelectedRow();
-                if (selectedRow != -1) {
-                    String customerName = (String) tableModel.getValueAt(selectedRow, 2); // 고객명 가져오기
-                    String roomInfo = (String) tableModel.getValueAt(selectedRow, 5); // 객실 정보 가져오기
-                    showCheckOutDialog(customerName, roomInfo, selectedRow);
-                } else {
-                    JOptionPane.showMessageDialog(null, "체크아웃할 예약을 선택하세요.");
-                }
+        checkOutButton.addActionListener(e -> {
+            int selectedRow = reservationTable.getSelectedRow();
+            if (selectedRow != -1) {
+                String roomNumber = (String) tableModel.getValueAt(selectedRow, 0);
+                tableModel.setValueAt("체크아웃 완료", selectedRow, 1);
+                JOptionPane.showMessageDialog(null, roomNumber + "호 체크아웃이 완료되었습니다.");
+            } else {
+                JOptionPane.showMessageDialog(null, "체크아웃할 예약을 선택하세요.");
             }
         });
     }
 
-    // 체크아웃 다이얼로그 창 생성 메서드
-    private void showCheckOutDialog(String customerName, String roomInfo, int selectedRow) {
-        JDialog checkOutDialog = new JDialog(this, "체크아웃", true);
-        checkOutDialog.setSize(400, 300);
-        checkOutDialog.setLayout(new BorderLayout());
-
-        // 지불 금액과 피드백 입력 패널
-        JPanel mainPanel = new JPanel(new GridLayout(4, 1, 10, 10));
-        JLabel customerLabel = new JLabel("고객명: " + customerName);
-        JLabel amountLabel = new JLabel("지불 금액:");
-        JTextField amountField = new JTextField();
-        JLabel feedbackLabel = new JLabel("고객 피드백:");
-        JTextArea feedbackArea = new JTextArea(3, 20);
-        feedbackArea.setLineWrap(true);
-        feedbackArea.setWrapStyleWord(true);
-
-        mainPanel.add(customerLabel);
-        mainPanel.add(amountLabel);
-        mainPanel.add(amountField);
-        mainPanel.add(feedbackLabel);
-        mainPanel.add(new JScrollPane(feedbackArea));
-
-        // 체크아웃 시간이 오전 11시 이후인지 확인
-        JButton submitButton = new JButton("수정");
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String amount = amountField.getText().trim();
-                String feedback = feedbackArea.getText().trim();
-
-                // 현재 시간을 가져옴
-                if (amount.isEmpty()) {
-                    JOptionPane.showMessageDialog(checkOutDialog, "지불 금액을 입력해주세요.");
-                } else {
-                    JOptionPane.showMessageDialog(checkOutDialog, "체크아웃이 완료되었습니다.\n총 금액: " + amount + "원\n고객 피드백: " + feedback);
-
-                    // 객실 정보 업데이트 (체크아웃 완료로 업데이트)
-                    tableModel.setValueAt("체크아웃 완료", selectedRow, 6);
-
-                    // 객실 정보 업데이트 (예시로 객실을 '빈 방'으로 설정)
-                    tableModel.setValueAt("빈 방", selectedRow, 5);
-
-                    checkOutDialog.dispose();
-                }
+    // 객실 리스트 파일에서 데이터 로드
+    private void loadRoomData() {
+        try (BufferedReader br = new BufferedReader(new FileReader("RoomList.txt"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split("\t");
+                String roomNumber = data[0];
+                String reservationStatus = data[1];
+                String customerName = data.length > 2 ? data[2] : "";
+                roomData.put(roomNumber, new String[]{reservationStatus, customerName});
             }
-        });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-        checkOutDialog.add(mainPanel, BorderLayout.CENTER);
-        checkOutDialog.add(submitButton, BorderLayout.SOUTH);
-        checkOutDialog.setLocationRelativeTo(this);
-        checkOutDialog.setVisible(true);
+    // 검색 기능
+    private void searchRoomData(String option, String value) {
+        tableModel.setRowCount(0); // 이전 검색 결과 초기화
+        for (Map.Entry<String, String[]> entry : roomData.entrySet()) {
+            String roomNumber = entry.getKey();
+            String[] info = entry.getValue();
+            String reservationStatus = info[0];
+            String customerName = info[1];
+
+            boolean match = false;
+            if (option.equals("예약번호") && roomNumber.equals(value)) {
+                match = true;
+            } else if (option.equals("고객명") && customerName.equals(value)) {
+                match = true;
+            }
+
+            if (match) {
+                tableModel.addRow(new Object[]{roomNumber, reservationStatus.equals("1") ? "예약됨" : "미예약", customerName});
+            }
+        }
+
+        if (tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "정보를 찾을 수 없습니다: " + value);
+        }
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new HotelCheckInOutSystem().setVisible(true);
-        });
+        SwingUtilities.invokeLater(() -> new HotelCheckInOutSystem().setVisible(true));
     }
 }
