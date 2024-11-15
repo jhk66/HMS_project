@@ -136,6 +136,11 @@ public class RestaurantFrame extends javax.swing.JFrame {
         jLabel7.setText("예약");
 
         resevationButton.setText("예약하기");
+        resevationButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resevationButtonActionPerformed(evt);
+            }
+        });
 
         reservationCheckButton.setText("예약확인");
 
@@ -435,6 +440,12 @@ public class RestaurantFrame extends javax.swing.JFrame {
     private void totalPriceFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_totalPriceFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_totalPriceFieldActionPerformed
+
+    private void resevationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resevationButtonActionPerformed
+        // TODO add your handling code here:
+        ServiceReservationFrame RRF = new ServiceReservationFrame();
+        RRF.setVisible(true);
+    }//GEN-LAST:event_resevationButtonActionPerformed
 
     private void initialization(){
         DefaultTableModel orderTableModel = (DefaultTableModel) orderTable.getModel();
