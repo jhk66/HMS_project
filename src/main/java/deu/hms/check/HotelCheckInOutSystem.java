@@ -4,8 +4,6 @@ package deu.hms.check;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,6 +81,7 @@ public class HotelCheckInOutSystem extends JFrame {
                 }
             }
         });
+        
 
         // 체크아웃 버튼 동작 설정
         checkOutButton.addActionListener(e -> {
@@ -99,7 +98,9 @@ public class HotelCheckInOutSystem extends JFrame {
 
     // 객실 리스트 파일에서 데이터 로드
     private void loadRoomData() {
-        try (BufferedReader br = new BufferedReader(new FileReader("RoomList.txt"))) {
+        String paths = System.getProperty("user.dir");
+        File roomListFile = new File(paths + "/RoomList.txt");
+        try (BufferedReader br = new BufferedReader(new FileReader(roomListFile))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split("\t");
