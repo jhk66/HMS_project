@@ -3,6 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package deu.hms.login;
+import deu.hms.mainmenu.MasterFrame;
+import deu.hms.mainmenu.StaffFrame;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 
 /**
  *
@@ -15,7 +21,9 @@ public class LogInFrame extends javax.swing.JFrame {
      */
     public LogInFrame() {
         initComponents();
+         addListeners();
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -122,37 +130,34 @@ public class LogInFrame extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LogInFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LogInFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LogInFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LogInFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new LogInFrame().setVisible(true);
-            }
-        });
+     private void addListeners() {
+        logInButton.addActionListener(e -> handleLogin());
+        endButton.addActionListener(e -> System.exit(0));
+        idInputField.addActionListener(e -> handleLogin());
+        passwordInputField.addActionListener(e -> handleLogin());
     }
+
+    private void handleLogin() {
+        String id = idInputField.getText();
+        String password = new String(passwordInputField.getPassword());
+
+        if ("admin".equals(id) && "admin123".equals(password)) {
+            JOptionPane.showMessageDialog(this, "관리자님 환영합니다!");
+            new MasterFrame().setVisible(true); // MasterFrame 열기
+            this.dispose(); // 로그인 창 닫기
+        } else if ("staff".equals(id) && "staff123".equals(password)) {
+            JOptionPane.showMessageDialog(this, "직원님 환영합니다!");
+            new StaffFrame().setVisible(true); // StaffFrame 열기
+            this.dispose(); // 로그인 창 닫기
+        } else {
+            JOptionPane.showMessageDialog(this, "아이디 또는 비밀번호가 잘못되었습니다.", "로그인 실패", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void main(String args[]) {
+        java.awt.EventQueue.invokeLater(() -> new LogInFrame().setVisible(true));
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton endButton;
