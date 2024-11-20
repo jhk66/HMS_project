@@ -14,7 +14,7 @@ import javax.swing.table.DefaultTableModel;
  */
 public class RestaurantFrame extends javax.swing.JFrame {
 
-    private String part = "식사";
+    private final String part = "식사";
     private int totalPrice = 0;
     private String selectRoom = null;
     private String clientName = null;
@@ -143,6 +143,11 @@ public class RestaurantFrame extends javax.swing.JFrame {
         });
 
         reservationCheckButton.setText("예약확인");
+        reservationCheckButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reservationCheckButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -331,7 +336,7 @@ public class RestaurantFrame extends javax.swing.JFrame {
 
         selectRoom = null;
         payType = null;
-        
+
         totalPrice = 0;
         totalPriceField.setText(String.valueOf(totalPrice));
     }
@@ -399,23 +404,19 @@ public class RestaurantFrame extends javax.swing.JFrame {
 
     private void payButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_payButtonActionPerformed
         // TODO add your handling code here:
-        if (totalPrice != 0 && payType != null){
-            
-            
-            if(payType.equals("객실 청구")){
+        if (totalPrice != 0 && payType != null) {
+
+            if (payType.equals("객실 청구")) {
                 JOptionPane.showMessageDialog(null, "객실로 결제가 청구되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
-            }
-            else{
+            } else {
                 JOptionPane.showMessageDialog(null, "결제가 완료되었습니다.", "알림", JOptionPane.INFORMATION_MESSAGE);
             }
-            new SaveOrder(orderTable, selectRoom, part ,payType, totalPrice);
+            new SaveOrder(orderTable, selectRoom, part, payType, totalPrice);
             initialization();
-            
-        }
-        else if(payType == null){
+
+        } else if (payType == null) {
             JOptionPane.showMessageDialog(null, "결제 방식을 선택해주세요", "오류", JOptionPane.ERROR_MESSAGE);
-        }
-        else{
+        } else {
             JOptionPane.showMessageDialog(null, "결제할 금액이 없습니다.", "오류", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_payButtonActionPerformed
@@ -443,11 +444,29 @@ public class RestaurantFrame extends javax.swing.JFrame {
 
     private void resevationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resevationButtonActionPerformed
         // TODO add your handling code here:
-        ServiceReservationFrame RRF = new ServiceReservationFrame();
-        RRF.setVisible(true);
+        if (selectRoom != null && payType != null && totalPrice != 0) {
+            ServiceReservationFrame RRF = new ServiceReservationFrame(orderTable, selectRoom, part, totalPrice);
+            RRF.setVisible(true);
+            initialization();
+        }
+        else if(selectRoom == null){
+            JOptionPane.showMessageDialog(null, "객실을 선택하세요.", "오류", JOptionPane.ERROR_MESSAGE);
+        }
+        else if(payType == null){
+            JOptionPane.showMessageDialog(null, "결제방식을 선택하세요.", "오류", JOptionPane.ERROR_MESSAGE);
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "예약할 메뉴가 없습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_resevationButtonActionPerformed
 
-    private void initialization(){
+    private void reservationCheckButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reservationCheckButtonActionPerformed
+        // TODO add your handling code here:
+        CheckReservationFrame CRF = new CheckReservationFrame();
+        CRF.setVisible(true);
+    }//GEN-LAST:event_reservationCheckButtonActionPerformed
+
+    private void initialization() {
         DefaultTableModel orderTableModel = (DefaultTableModel) orderTable.getModel();
         orderTableModel.setNumRows(0);
         roomListComboBox.getModel().setSelectedItem(null);
@@ -457,7 +476,7 @@ public class RestaurantFrame extends javax.swing.JFrame {
         totalPrice = 0;
         totalPriceField.setText(String.valueOf(totalPrice));
     }
-    
+
     /**
      * @param args the command line arguments
      */

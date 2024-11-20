@@ -4,8 +4,6 @@
  */
 package deu.hms.restaurant;
 
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -15,16 +13,41 @@ import javax.swing.table.DefaultTableModel;
  * @author choun
  */
 public class ServiceReservationFrame extends javax.swing.JFrame {
-        private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        ArrayList<Object[]> tableData = new ArrayList<>();
-        private String reservationDate;
+    private String roomNum = null;
+    private String part = null;
+    private String hour = null;
+    private String min = null;
+    private int total = 0;
+    
     /**
      * Creates new form ResraurantReservationFrame
      */
     public ServiceReservationFrame() {
         initComponents();
-        insertOrederTable();
+        setLocationRelativeTo(null);
+    }
+    public ServiceReservationFrame(JTable table, String roomNum, String part, int total) {
+        this.roomNum = roomNum;
+        this.part = part;
+        this.total = total;
+                
+        initComponents();
+        setLocationRelativeTo(null);
+        
+        ArrayList<Object[]> tableData = new ArrayList<>();
+        tableData.clear();
+        for (int i = 0; i < table.getRowCount(); i++) {
+            Object[] rowData = new Object[table.getColumnCount()];
+            for (int j = 0; j < table.getColumnCount(); j++) {
+                rowData[j] = table.getValueAt(i, j);
+            }
+            tableData.add(rowData);
+        }
+        
+        DefaultTableModel orderTable = (DefaultTableModel) reservationOrderTable.getModel();
+        for (Object[] rowData : tableData) {
+            orderTable.addRow(rowData);
+        }
         
     }
 
@@ -53,7 +76,7 @@ public class ServiceReservationFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("맑은 고딕", 1, 24)); // NOI18N
-        jLabel1.setText("식사 예약하기");
+        jLabel1.setText("예약하기");
 
         reservationOrderTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -62,8 +85,17 @@ public class ServiceReservationFrame extends javax.swing.JFrame {
             new String [] {
                 "메뉴", "가격", "수량"
             }
-        ));
+        ){
+            @Override
+            public boolean isCellEditable(int row, int colum){
+                return false;
+            }
+        });
         jScrollPane1.setViewportView(reservationOrderTable);
+        if (reservationOrderTable.getColumnModel().getColumnCount() > 0) {
+            reservationOrderTable.getColumnModel().getColumn(2).setMinWidth(80);
+            reservationOrderTable.getColumnModel().getColumn(2).setMaxWidth(80);
+        }
 
         jLabel3.setFont(new java.awt.Font("맑은 고딕", 0, 18)); // NOI18N
         jLabel3.setText("날짜");
@@ -73,17 +105,32 @@ public class ServiceReservationFrame extends javax.swing.JFrame {
 
         reservationHourComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "08", "09", "10", "11", "12", "13", "14", "17", "18", "19", "20", "21" }));
         reservationHourComboBox.setSelectedIndex(-1);
+        reservationHourComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reservationHourComboBoxActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("맑은 고딕", 0, 18)); // NOI18N
         jLabel4.setText("시");
 
         reservationMinComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "00", "30" }));
         reservationMinComboBox.setSelectedIndex(-1);
+        reservationMinComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reservationMinComboBoxActionPerformed(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("맑은 고딕", 0, 18)); // NOI18N
         jLabel5.setText("분");
 
         saveButton.setText("저장");
+        saveButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveButtonActionPerformed(evt);
+            }
+        });
 
         endButton.setText("닫기");
         endButton.addActionListener(new java.awt.event.ActionListener() {
@@ -103,9 +150,6 @@ public class ServiceReservationFrame extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(154, 154, 154)
-                                .addComponent(jLabel1))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(132, 132, 132)
                                 .addComponent(jLabel3)
@@ -130,15 +174,19 @@ public class ServiceReservationFrame extends javax.swing.JFrame {
                                         .addComponent(jLabel5)))))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(183, 183, 183)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(19, 19, 19)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(27, 27, 27)
                         .addComponent(jLabel3))
@@ -160,32 +208,26 @@ public class ServiceReservationFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    public void getorederTable(JTable table){
-        for (int i = 0; i < table.getRowCount(); i++) {
-            Object[] rowData = new Object[table.getColumnCount()];
-            for (int j = 0; j < table.getColumnCount(); j++) {
-                rowData[j] = table.getValueAt(i, j);
-            }
-            tableData.add(rowData);
-        }
-    }
-    private void insertOrederTable(){
-        DefaultTableModel orderTable = (DefaultTableModel) reservationOrderTable.getModel();
-        for (Object[] rowData : tableData) {
-            orderTable.addRow(rowData);
-        }
-    }
-    
-    private String getDate(){
-        reservationDate = dateFormat.format(reservationDateChooser.getDate());
-        System.out.println(reservationDate);
-        return reservationDate;
-    }
-    
     private void endButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_endButtonActionPerformed
         // TODO add your handling code here:
         dispose();
     }//GEN-LAST:event_endButtonActionPerformed
+
+    private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
+        // TODO add your handling code here:res.getDate(reservationDateChooser);
+        SaveReservation res = new SaveReservation(reservationDateChooser, reservationOrderTable, roomNum, part, hour, min, total);
+        dispose();
+    }//GEN-LAST:event_saveButtonActionPerformed
+
+    private void reservationHourComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reservationHourComboBoxActionPerformed
+        // TODO add your handling code here:
+        hour = String.valueOf(reservationHourComboBox.getSelectedItem());
+    }//GEN-LAST:event_reservationHourComboBoxActionPerformed
+
+    private void reservationMinComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reservationMinComboBoxActionPerformed
+        // TODO add your handling code here:
+        min = String.valueOf(reservationMinComboBox.getSelectedItem());
+    }//GEN-LAST:event_reservationMinComboBoxActionPerformed
 
     /**
      * @param args the command line arguments
