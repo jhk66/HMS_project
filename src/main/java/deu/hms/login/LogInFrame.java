@@ -8,6 +8,8 @@ import deu.hms.mainmenu.StaffFrame;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.HashMap;
 
 
 /**
@@ -15,15 +17,53 @@ import java.awt.event.ActionListener;
  * @author choun
  */
 public class LogInFrame extends javax.swing.JFrame {
-
+    private static final String USER_DATA_FILE = "login.txt"; // 사용자 데이터 파일 경로
+    private HashMap<String, String> adminData = new HashMap<>();
+    private HashMap<String, String> staffData = new HashMap<>();
     /**
      * Creates new form LogInFrame
      */
     public LogInFrame() {
         initComponents();
+       loadUserData(); // 사용자 데이터 로드
          addListeners();
     }
 
+    
+    
+        private void loadUserData() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(USER_DATA_FILE))) {
+            String line;
+            HashMap<String, String> currentMap = null;
+
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+
+                if (line.isEmpty()) continue; // 빈 줄 무시
+
+                if (line.equals("관리자")) {
+                    currentMap = adminData;
+                } else if (line.equals("스태프")) {
+                    currentMap = staffData;
+                } else if (line.startsWith("아이디:") && currentMap != null) {
+                    String id = line.substring(4).trim();
+                    line = reader.readLine();
+                    if (line != null && line.startsWith("비밀번호:")) {
+                        String password = line.substring(5).trim();
+                        currentMap.put(id, password);
+                    } else {
+                        throw new IOException("비밀번호가 누락되었습니다. 데이터 형식을 확인하세요.");
+                    }
+                } else {
+                    throw new IOException("알 수 없는 데이터 형식입니다: " + line);
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "사용자 데이터를 로드하는 중 오류가 발생했습니다: " + e.getMessage(),
+                    "오류", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
