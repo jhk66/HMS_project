@@ -1,4 +1,3 @@
-
 package deu.hms.check;
 
 import javax.swing.*;
@@ -47,11 +46,18 @@ public class HotelCheckInOutSystem extends JFrame {
         JScrollPane tableScrollPane = new JScrollPane(reservationTable);
 
         // 하단 버튼 패널 설정
-        JPanel buttonPanel = new JPanel();
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+        JPanel actionButtons = new JPanel(); // 체크인, 체크아웃 버튼을 위한 패널
         JButton checkInButton = new JButton("체크인");
         JButton checkOutButton = new JButton("체크아웃");
-        buttonPanel.add(checkInButton);
-        buttonPanel.add(checkOutButton);
+        actionButtons.add(checkInButton);
+        actionButtons.add(checkOutButton);
+
+        JButton closeButton = new JButton("닫기"); // 창 닫기 버튼
+        closeButton.addActionListener(e -> dispose()); // 프레임 종료
+
+        buttonPanel.add(actionButtons, BorderLayout.CENTER); // 중앙에 체크인, 체크아웃 버튼
+        buttonPanel.add(closeButton, BorderLayout.EAST);     // 오른쪽에 닫기 버튼
 
         // 프레임에 컴포넌트 추가
         add(searchPanel, BorderLayout.NORTH);
@@ -81,7 +87,6 @@ public class HotelCheckInOutSystem extends JFrame {
                 }
             }
         });
-        
 
         // 체크아웃 버튼 동작 설정
         checkOutButton.addActionListener(e -> {
@@ -99,14 +104,14 @@ public class HotelCheckInOutSystem extends JFrame {
     // 객실 리스트 파일에서 데이터 로드
     private void loadRoomData() {
         String paths = System.getProperty("user.dir");
-        File roomListFile = new File(paths + "/RoomList.txt");
+        File roomListFile = new File(paths + "/ReservationList.txt");
         try (BufferedReader br = new BufferedReader(new FileReader(roomListFile))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split("\t");
-                String roomNumber = data[0];
-                String reservationStatus = data[1];
-                String customerName = data.length > 2 ? data[2] : "";
+                String roomNumber = data[5];
+                String reservationStatus = data[9];
+                String customerName = data[1];
                 roomData.put(roomNumber, new String[]{reservationStatus, customerName});
             }
         } catch (IOException e) {
