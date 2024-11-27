@@ -107,17 +107,19 @@ public class HotelCheckInOutSystem extends JFrame {
             if (selectedRow != -1) {
                 String roomNumber = (String) tableModel.getValueAt(selectedRow, 2);
                 String roomStatus = (String) tableModel.getValueAt(selectedRow, 4);
-                if ("1".equals(roomStatus)) {
+                if ("2".equals(roomStatus)) {
+                    JOptionPane.showMessageDialog(this, roomNumber + "호는 이미 체크인된 상태입니다.", "경고", JOptionPane.WARNING_MESSAGE);
+                } else if ("1".equals(roomStatus)) {
                     tableModel.setValueAt("2", selectedRow, 4);
                     tableModel.setValueAt("체크인", selectedRow, 5);
                     updateRoomListFile(roomNumber, "2");
                     updateReservationListFile((String) tableModel.getValueAt(selectedRow, 0), "체크인");
                     JOptionPane.showMessageDialog(this, roomNumber + "호 체크인이 완료되었습니다.");
                 } else {
-                    JOptionPane.showMessageDialog(this, "예약 상태가 아니어서 체크인할 수 없습니다.");
+                    JOptionPane.showMessageDialog(this, "예약 상태가 아니어서 체크인할 수 없습니다.", "경고", JOptionPane.WARNING_MESSAGE);
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "체크인할 예약을 선택하세요.");
+                JOptionPane.showMessageDialog(this, "체크인할 예약을 선택하세요.", "경고", JOptionPane.WARNING_MESSAGE);
             }
         });
 
@@ -128,11 +130,15 @@ public class HotelCheckInOutSystem extends JFrame {
                 String roomNumber = (String) tableModel.getValueAt(selectedRow, 2);
                 String roomStatus = (String) tableModel.getValueAt(selectedRow, 4);
                 if ("2".equals(roomStatus)) {
+                    String reservationNumber = (String) tableModel.getValueAt(selectedRow, 0);
+                    int totalPayment = calculateTotalPayment(roomNumber, reservationNumber);
+
+                    JOptionPane.showMessageDialog(this, "총 지불 금액: " + totalPayment + "원", "체크아웃 완료", JOptionPane.INFORMATION_MESSAGE);
+
                     tableModel.setValueAt("0", selectedRow, 4);
                     tableModel.setValueAt("체크아웃", selectedRow, 5);
                     updateRoomListFile(roomNumber, "0");
-                    updateReservationListFile((String) tableModel.getValueAt(selectedRow, 0), "체크아웃");
-                    JOptionPane.showMessageDialog(this, roomNumber + "호 체크아웃이 완료되었습니다.");
+                    updateReservationListFile(reservationNumber, "체크아웃");
                 } else {
                     JOptionPane.showMessageDialog(this, "체크인 상태가 아니어서 체크아웃할 수 없습니다.");
                 }
@@ -142,7 +148,6 @@ public class HotelCheckInOutSystem extends JFrame {
         });
     }
 
-    // ReservationList.txt 데이터를 로드
     private void loadReservationData() {
         String paths = System.getProperty("user.dir");
         File reservationFile = new File(paths + "/ReservationList.txt");
@@ -159,7 +164,6 @@ public class HotelCheckInOutSystem extends JFrame {
         }
     }
 
-    // RoomList.txt 데이터를 로드
     private void loadRoomData() {
         String paths = System.getProperty("user.dir");
         File roomListFile = new File(paths + "/RoomList.txt");
@@ -176,7 +180,6 @@ public class HotelCheckInOutSystem extends JFrame {
         }
     }
 
-    // RoomList.txt 파일 업데이트 메소드
     private void updateRoomListFile(String roomNumber, String newStatus) {
         String paths = System.getProperty("user.dir");
         File roomListFile = new File(paths + "/RoomList.txt");
@@ -203,7 +206,6 @@ public class HotelCheckInOutSystem extends JFrame {
         }
     }
 
-    // ReservationList.txt 파일 업데이트 메소드
     private void updateReservationListFile(String reservationNumber, String status) {
         String paths = System.getProperty("user.dir");
         File reservationFile = new File(paths + "/ReservationList.txt");
@@ -214,7 +216,7 @@ public class HotelCheckInOutSystem extends JFrame {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split("\\s+");
                 if (parts[0].equals(reservationNumber)) {
-                    parts[9] = status; // 체크인/체크아웃 상태 업데이트
+                    parts[10] = status;
                 }
                 updatedContent.append(String.join("\t", parts)).append("\n");
             }
@@ -238,10 +240,16 @@ public class HotelCheckInOutSystem extends JFrame {
             String customerName = reservation[1];
             String roomNumber = reservation[5];
             String checkOutDate = reservation[9];
-            String checkInOutStatus = reservation[10]; // 체크인/체크아웃 상태
+            String checkInOutStatus = reservation[10];
 
-            String[] roomInfo = roomData.get(roomNumber);
-            String roomStatus = roomInfo != null ? roomInfo[0] : "0";
+            String roomStatus;
+            if ("체크인".equals(checkInOutStatus)) {
+                roomStatus = "2";
+            } else if ("예약".equals(checkInOutStatus)) {
+                roomStatus = "1";
+            } else {
+                roomStatus = "0";
+            }
 
             boolean match = false;
             if (option.equals("예약번호") && reservationNumber.equals(value)) {
@@ -262,6 +270,47 @@ public class HotelCheckInOutSystem extends JFrame {
             JOptionPane.showMessageDialog(this, "정보를 찾을 수 없습니다: " + value);
         }
     }
+
+    private int calculateTotalPayment(String roomNumber, String reservationNumber) {
+        int reservationAmount = 0;
+
+        // ReservationList에서 예약 금액 가져오기
+        for (String[] reservation : reservationData) {
+            if (reservation[0].equals(reservationNumber)) {
+                reservationAmount = Integer.parseInt(reservation[7]); // 예약 금액 (8번째 데이터)
+                break;
+            }
+        }
+
+        int serviceAmount = 0;
+        String paths = System.getProperty("user.dir");
+        File serviceOrderFile = new File(paths + "/ServiceOrderList.txt");
+
+        // ServiceOrderList에서 지불 금액 합산
+        try (BufferedReader br = new BufferedReader(new FileReader(serviceOrderFile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) continue;
+
+                // 데이터 파싱
+                String[] data = line.split("\\s+");
+
+                // 객실 번호 확인 및 금액 합산
+                if (data[2].equals(roomNumber)) {
+                    try {
+                        serviceAmount += Integer.parseInt(data[data.length - 1]); // 마지막 데이터 (금액)
+                    } catch (NumberFormatException e) {
+                        System.err.println("ServiceOrderList.txt 금액 변환 오류: " + e.getMessage());
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("ServiceOrderList.txt 읽기 오류: " + e.getMessage());
+        }
+
+        return reservationAmount + serviceAmount;
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new HotelCheckInOutSystem().setVisible(true));
