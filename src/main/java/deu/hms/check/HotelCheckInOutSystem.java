@@ -4,10 +4,13 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.io.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.format.DateTimeFormatter;
 
 public class HotelCheckInOutSystem extends JFrame {
     private JTextField searchField;
@@ -123,7 +126,6 @@ public class HotelCheckInOutSystem extends JFrame {
             }
         });
 
-        // 체크아웃 버튼 동작 설정
         checkOutButton.addActionListener(e -> {
             int selectedRow = reservationTable.getSelectedRow();
             if (selectedRow != -1) {
@@ -131,9 +133,30 @@ public class HotelCheckInOutSystem extends JFrame {
                 String roomStatus = (String) tableModel.getValueAt(selectedRow, 4);
                 if ("2".equals(roomStatus)) {
                     String reservationNumber = (String) tableModel.getValueAt(selectedRow, 0);
+                    String checkOutDateStr = (String) tableModel.getValueAt(selectedRow, 3);
+
+                    // DateTimeFormatter 사용
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+                    LocalDate checkOutDate = LocalDate.parse(checkOutDateStr, formatter);
+                    LocalDate currentDate = LocalDate.now();
+                    LocalTime currentTime = LocalTime.now();
+
                     int totalPayment = calculateTotalPayment(roomNumber, reservationNumber);
 
-                    JOptionPane.showMessageDialog(this, "총 지불 금액: " + totalPayment + "원", "체크아웃 완료", JOptionPane.INFORMATION_MESSAGE);
+                    // 체크아웃이 당일이거나 이후 날짜에만 추가 요금 계산
+                    if (!currentDate.isBefore(checkOutDate) && currentTime.isAfter(LocalTime.of(11, 0))) {
+                        int floor = Integer.parseInt(roomNumber) / 100; // 방 번호에서 100으로 나누어 층수 계산
+                        int additionalFee = getFloorFee(floor);
+                        totalPayment += additionalFee;
+                    }
+
+                    // 시간에서 초 제거 (HH:mm 형식)
+                    String formattedTime = currentTime.withSecond(0).withNano(0).toString().substring(0, 5);
+
+                    JOptionPane.showMessageDialog(this,
+                            "체크아웃 시간: " + currentDate + " " + formattedTime + "\n" +
+                                    "총 지불 금액: " + totalPayment + "원",
+                            "체크아웃 완료", JOptionPane.INFORMATION_MESSAGE);
 
                     tableModel.setValueAt("0", selectedRow, 4);
                     tableModel.setValueAt("체크아웃", selectedRow, 5);
@@ -146,6 +169,7 @@ public class HotelCheckInOutSystem extends JFrame {
                 JOptionPane.showMessageDialog(this, "체크아웃할 예약을 선택하세요.");
             }
         });
+
     }
 
     private void loadReservationData() {
@@ -310,6 +334,27 @@ public class HotelCheckInOutSystem extends JFrame {
 
         return reservationAmount + serviceAmount;
     }
+
+    private int getFloorFee(int floor) {
+        String paths = System.getProperty("user.dir");
+        File roomInfoFile = new File(paths + "/RoomInfo.txt");
+
+        try (BufferedReader br = new BufferedReader(new FileReader(roomInfoFile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split("\\s+");
+                if (Integer.parseInt(data[0]) == floor) {
+                    return Integer.parseInt(data[2]); // 3번째 데이터가 추가 금액
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("RoomInfo.txt 읽기 오류: " + e.getMessage());
+        }
+
+        return 0; // 기본 추가 요금 0
+    }
+
+
 
 
     public static void main(String[] args) {
