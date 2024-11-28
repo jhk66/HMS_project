@@ -26,11 +26,18 @@ public class HotelCheckInOutSystem extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        // 테이블 모델 초기화
+        String[] columnNames = {"예약 번호", "고객명", "객실 정보", "체크아웃 날짜", "상태", "체크인/아웃"};
+        tableModel = new DefaultTableModel(columnNames, 0);
+        reservationTable = new JTable(tableModel);
+
         // 초기 데이터 로드
         reservationData = new ArrayList<>();
         roomData = new HashMap<>();
-        loadReservationData(); // ReservationList 데이터 로드
-        loadRoomData();        // RoomList 데이터 로드
+
+        // 데이터 로드 메서드 호출
+        loadReservationData();
+        loadRoomData();
 
         // 상단 검색 패널 설정
         JPanel searchPanel = new JPanel(new BorderLayout());
@@ -71,10 +78,6 @@ public class HotelCheckInOutSystem extends JFrame {
         searchPanel.add(searchBar, BorderLayout.CENTER);
 
         // 예약 테이블 설정
-        String[] columnNames = {"예약 번호", "고객명", "객실 정보", "체크아웃 날짜", "상태", "체크인/아웃"};
-        tableModel = new DefaultTableModel(columnNames, 0);
-        reservationTable = new JTable(tableModel);
-
         JTableHeader header = reservationTable.getTableHeader();
         DefaultTableCellRenderer headerRenderer = (DefaultTableCellRenderer) header.getDefaultRenderer();
         headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -104,7 +107,8 @@ public class HotelCheckInOutSystem extends JFrame {
             searchRoomData(searchOption, searchValue);
         });
 
-        // 체크인 버튼 동작 설정
+
+    // 체크인 버튼 동작 설정
         checkInButton.addActionListener(e -> {
             int selectedRow = reservationTable.getSelectedRow();
             if (selectedRow != -1) {
@@ -180,13 +184,69 @@ public class HotelCheckInOutSystem extends JFrame {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty()) continue;
+
+                // 공백 기준으로 데이터 분리
                 String[] data = line.split("\\s+");
-                reservationData.add(data);
+
+                // 고정된 데이터 열이 8개이므로, 주소 길이를 계산
+                int addressStartIndex = 2;
+                int fixedColumns = 8; // 예약 번호, 고객명 제외한 나머지 고정 열
+                int addressEndIndex = data.length - fixedColumns;
+
+                // 주소를 재구성
+                StringBuilder addressBuilder = new StringBuilder();
+                for (int i = addressStartIndex; i < addressEndIndex; i++) {
+                    addressBuilder.append(data[i]).append(" ");
+                }
+                String address = addressBuilder.toString().trim();
+
+                // 재구성된 데이터 배열
+                String[] formattedData = new String[11];
+                formattedData[0] = data[0];  // 예약 번호
+                formattedData[1] = data[1];  // 고객명
+                formattedData[2] = address;  // 재구성된 주소
+                System.arraycopy(data, addressEndIndex, formattedData, 3, fixedColumns);
+
+                reservationData.add(formattedData); // 최종 데이터 추가
             }
         } catch (IOException e) {
             System.err.println("ReservationList.txt 파일 읽기 중 오류: " + e.getMessage());
         }
+
+        // 데이터를 테이블에 추가
+        populateTable();
     }
+
+    private void populateTable() {
+        tableModel.setRowCount(0); // 기존 데이터 초기화
+
+        for (String[] reservation : reservationData) {
+            // 테이블에 표시할 데이터만 선택
+            String reservationNumber = reservation[0]; // 예약 번호
+            String customerName = reservation[1];      // 고객명
+            String roomInfo = reservation[5];          // 객실 정보
+            String checkOutDate = reservation[9];      // 체크아웃 날짜
+            String status = reservation[10];           // 상태
+
+            String displayStatus;
+            if ("체크인".equals(status)) {
+                displayStatus = "2"; // 체크인 상태
+            } else if ("예약".equals(status)) {
+                displayStatus = "1"; // 예약 상태
+            } else {
+                displayStatus = "0"; // 기타 상태
+            }
+
+            // 테이블 행 추가
+            tableModel.addRow(new Object[]{
+                    reservationNumber, customerName, roomInfo, checkOutDate, displayStatus, status
+            });
+        }
+    }
+
+
+
+
 
     private void loadRoomData() {
         String paths = System.getProperty("user.dir");
@@ -238,23 +298,50 @@ public class HotelCheckInOutSystem extends JFrame {
         try (BufferedReader br = new BufferedReader(new FileReader(reservationFile))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split("\\s+");
-                if (parts[0].equals(reservationNumber)) {
-                    parts[10] = status;
+                if (line.trim().isEmpty()) continue;
+
+                String[] data = line.split("\\s+");
+
+                // 고정된 데이터 파싱 방식 적용
+                int addressStartIndex = 2;
+                int fixedColumns = 8;
+                int addressEndIndex = data.length - fixedColumns;
+
+                // 예약 번호가 일치하면 상태 업데이트
+                if (data[0].equals(reservationNumber)) {
+                    data[data.length - 1] = status; // 마지막 열(상태)을 업데이트
                 }
-                updatedContent.append(String.join("\t", parts)).append("\n");
+
+                // 업데이트된 데이터 재구성
+                StringBuilder addressBuilder = new StringBuilder();
+                for (int i = addressStartIndex; i < addressEndIndex; i++) {
+                    addressBuilder.append(data[i]).append(" ");
+                }
+                String address = addressBuilder.toString().trim();
+
+                String[] formattedData = new String[11];
+                formattedData[0] = data[0];
+                formattedData[1] = data[1];
+                formattedData[2] = address;
+                System.arraycopy(data, addressEndIndex, formattedData, 3, fixedColumns);
+
+                // 파일에 저장할 형식으로 변환
+                String updatedLine = String.join("\t", formattedData);
+                updatedContent.append(updatedLine).append("\n");
             }
         } catch (IOException e) {
             System.err.println("ReservationList.txt 읽기 오류: " + e.getMessage());
             return;
         }
 
+        // 파일에 업데이트된 내용 쓰기
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(reservationFile))) {
             bw.write(updatedContent.toString());
         } catch (IOException e) {
             System.err.println("ReservationList.txt 쓰기 오류: " + e.getMessage());
         }
     }
+
 
     private void searchRoomData(String option, String value) {
         tableModel.setRowCount(0);
