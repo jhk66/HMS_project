@@ -160,18 +160,42 @@ public class HotelCheckInOutSystem extends JFrame {
                     int lateCheckoutFee = getAdditionalLateCheckoutFee(reservationNumber);
                     totalPayment += lateCheckoutFee;
 
-                    // 결과 출력
-                    JOptionPane.showMessageDialog(this,
-                            "체크아웃 시간: " + currentDate + " " + formattedTime + "\n" +
-                                    "총 지불 금액: " + totalPayment + "원",
-                            "체크아웃 완료", JOptionPane.INFORMATION_MESSAGE);
+                    // 고객 피드백 입력
+                    JTextArea feedbackArea = new JTextArea(5, 20);
+                    feedbackArea.setLineWrap(true);
+                    feedbackArea.setWrapStyleWord(true);
 
-                    // RoomList와 ReservationList 상태 업데이트
-                    updateRoomListFile(roomNumber, "0"); // RoomList 상태를 0으로 변경
-                    updateReservationListFile(reservationNumber, "체크아웃");
+                    JScrollPane feedbackScrollPane = new JScrollPane(feedbackArea);
 
-                    // 테이블 상태 업데이트
-                    tableModel.setValueAt("체크아웃", selectedRow, 5);
+                    int feedbackResult = JOptionPane.showConfirmDialog(
+                            this,
+                            new Object[]{
+                                    "체크아웃 시간: " + currentDate + " " + formattedTime + "\n" +
+                                            "총 지불 금액: " + totalPayment + "원\n\n" +
+                                            "고객 피드백을 입력하세요:",
+                                    feedbackScrollPane
+                            },
+                            "체크아웃 완료",
+                            JOptionPane.OK_CANCEL_OPTION
+                    );
+
+                    if (feedbackResult == JOptionPane.OK_OPTION) {
+                        String feedback = feedbackArea.getText().trim();
+                        if (!feedback.isEmpty()) {
+                            // 피드백 저장 (예: 파일에 저장하거나 로그 출력)
+                            System.out.println("고객 피드백: " + feedback);
+                        }
+
+                        // RoomList와 ReservationList 상태 업데이트
+                        updateRoomListFile(roomNumber, "0"); // RoomList 상태를 0으로 변경
+                        updateReservationListFile(reservationNumber, "체크아웃");
+
+                        // 테이블 상태 업데이트
+                        tableModel.setValueAt("체크아웃", selectedRow, 5);
+                        JOptionPane.showMessageDialog(this, "체크아웃이 완료되었습니다.");
+                    } else {
+                        JOptionPane.showMessageDialog(this, "체크아웃이 취소되었습니다.");
+                    }
                 } else {
                     JOptionPane.showMessageDialog(this, "체크인 상태가 아니어서 체크아웃할 수 없습니다.");
                 }
@@ -179,6 +203,7 @@ public class HotelCheckInOutSystem extends JFrame {
                 JOptionPane.showMessageDialog(this, "체크아웃할 예약을 선택하세요.");
             }
         });
+
 
         // 닫기 버튼 동작 설정
         closeButton.addActionListener(e -> {
@@ -193,7 +218,7 @@ public class HotelCheckInOutSystem extends JFrame {
 
     private void loadReservationData() {
         String paths = System.getProperty("user.dir");
-        File reservationFile = new File(paths + "/ReservationList.txt");
+        File reservationFile = new File(paths + "/src/ReservationList.txt");
 
         try (BufferedReader br = new BufferedReader(new FileReader(reservationFile))) {
             String line;
@@ -256,7 +281,7 @@ public class HotelCheckInOutSystem extends JFrame {
 
     private void loadRoomData() {
         String paths = System.getProperty("user.dir");
-        File roomListFile = new File(paths + "/RoomList.txt");
+        File roomListFile = new File(paths + "/src/RoomList.txt");
 
         try (BufferedReader br = new BufferedReader(new FileReader(roomListFile))) {
             String line;
@@ -272,7 +297,7 @@ public class HotelCheckInOutSystem extends JFrame {
 
     private void updateRoomListFile(String roomNumber, String newStatus) {
         String paths = System.getProperty("user.dir");
-        File roomListFile = new File(paths + "/RoomList.txt");
+        File roomListFile = new File(paths + "/src/RoomList.txt");
         StringBuilder updatedContent = new StringBuilder();
 
         try (BufferedReader br = new BufferedReader(new FileReader(roomListFile))) {
@@ -310,7 +335,7 @@ public class HotelCheckInOutSystem extends JFrame {
 
     private void updateReservationListFile(String reservationNumber, String status) {
         String paths = System.getProperty("user.dir");
-        File reservationFile = new File(paths + "/ReservationList.txt");
+        File reservationFile = new File(paths + "/src/ReservationList.txt");
         StringBuilder updatedContent = new StringBuilder();
 
         try (BufferedReader br = new BufferedReader(new FileReader(reservationFile))) {
@@ -423,7 +448,7 @@ public class HotelCheckInOutSystem extends JFrame {
 
         int serviceAmount = 0;
         String paths = System.getProperty("user.dir");
-        File serviceOrderFile = new File(paths + "/ServiceOrderList.txt");
+        File serviceOrderFile = new File(paths + "/src/ServiceOrderList.txt");
 
         try (BufferedReader br = new BufferedReader(new FileReader(serviceOrderFile))) {
             String line;
@@ -539,7 +564,7 @@ public class HotelCheckInOutSystem extends JFrame {
 
     private int getFloorFee(int floor) {
         String paths = System.getProperty("user.dir");
-        File roomInfoFile = new File(paths + "/RoomInfo.txt");
+        File roomInfoFile = new File(paths + "/src/RoomInfo.txt");
 
         try (BufferedReader br = new BufferedReader(new FileReader(roomInfoFile))) {
             String line;
