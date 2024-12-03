@@ -4,6 +4,14 @@
  */
 package deu.hms.mainmenu;
 
+import deu.hms.check.HotelCheckInOutSystem;
+import deu.hms.login.LogInFrame;
+import deu.hms.management.HotelManagementMain;
+import deu.hms.reservation.ReservationAutoCancel;
+import deu.hms.reservation.ReservationMainFrame;
+import deu.hms.restaurant.RestaurantFrame;
+import deu.hms.roomservice.RoomServiceFrame;
+
 /**
  *
  * @author choun
@@ -15,6 +23,7 @@ public class MasterFrame extends javax.swing.JFrame {
      */
     public MasterFrame() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -37,6 +46,7 @@ public class MasterFrame extends javax.swing.JFrame {
         goHotelManagementButton = new javax.swing.JButton();
         goReportButton = new javax.swing.JButton();
         logOutButton = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -46,6 +56,11 @@ public class MasterFrame extends javax.swing.JFrame {
         jLabel2.setText("고객관리");
 
         goReservationButton.setText("예약 관리");
+        goReservationButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                goReservationButtonActionPerformed(evt);
+            }
+        });
 
         goCheckInOutButton.setText("<html>체크인<br>체크아웃</html>");
         goCheckInOutButton.addActionListener(new java.awt.event.ActionListener() {
@@ -57,16 +72,48 @@ public class MasterFrame extends javax.swing.JFrame {
         jLabel3.setText("호텔 서비스");
 
         goRestaurantButton.setText("식사");
+        goRestaurantButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                goRestaurantButtonActionPerformed(evt);
+            }
+        });
 
         goRoomServiceButton.setText("룸서비스");
+        goRoomServiceButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                goRoomServiceButtonActionPerformed(evt);
+            }
+        });
 
         jLabel4.setText("호텔관리");
 
-        goHotelManagementButton.setText("호텔 관리");
+        goHotelManagementButton.setText("호텔 기능 관리");
+        goHotelManagementButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                goHotelManagementButtonActionPerformed(evt);
+            }
+        });
 
-        goReportButton.setText("보고서");
+        goReportButton.setText("호텔 점유율");
+        goReportButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                goReportButtonActionPerformed(evt);
+            }
+        });
 
         logOutButton.setText("로그아웃");
+        logOutButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logOutButtonActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("닫기");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -92,11 +139,13 @@ public class MasterFrame extends javax.swing.JFrame {
                                 .addGap(26, 26, 26)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(goCheckInOutButton)
-                                    .addComponent(goHotelManagementButton, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                                    .addComponent(goHotelManagementButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(goReportButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .addGap(0, 42, Short.MAX_VALUE))
+                        .addGap(0, 38, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(logOutButton)))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
@@ -133,7 +182,9 @@ public class MasterFrame extends javax.swing.JFrame {
                             .addComponent(goRoomServiceButton, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(goReportButton, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(16, 16, 16)))
-                .addComponent(logOutButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(logOutButton)
+                    .addComponent(jButton1))
                 .addContainerGap(9, Short.MAX_VALUE))
         );
 
@@ -141,8 +192,45 @@ public class MasterFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void goCheckInOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goCheckInOutButtonActionPerformed
-        // TODO add your handling code here:
+        new ReservationAutoCancel();
+        HotelCheckInOutSystem HCIOS = new HotelCheckInOutSystem();
+        HCIOS.setVisible(true);
     }//GEN-LAST:event_goCheckInOutButtonActionPerformed
+
+    private void goRestaurantButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goRestaurantButtonActionPerformed
+        RestaurantFrame RF = new RestaurantFrame();
+        RF.setVisible(true);
+    }//GEN-LAST:event_goRestaurantButtonActionPerformed
+
+    private void goRoomServiceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goRoomServiceButtonActionPerformed
+        RoomServiceFrame RSF = new RoomServiceFrame();
+        RSF.setVisible(true);
+    }//GEN-LAST:event_goRoomServiceButtonActionPerformed
+
+    private void goHotelManagementButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goHotelManagementButtonActionPerformed
+        HotelManagementMain HMM = new HotelManagementMain();
+        HMM.setVisible(true);
+    }//GEN-LAST:event_goHotelManagementButtonActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void logOutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logOutButtonActionPerformed
+        LogInFrame LoginF = new LogInFrame();
+        LoginF.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_logOutButtonActionPerformed
+
+    private void goReservationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goReservationButtonActionPerformed
+        new ReservationAutoCancel();
+        ReservationMainFrame RMF = new ReservationMainFrame();
+        RMF.setVisible(true);
+    }//GEN-LAST:event_goReservationButtonActionPerformed
+
+    private void goReportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goReportButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_goReportButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -186,6 +274,7 @@ public class MasterFrame extends javax.swing.JFrame {
     private javax.swing.JButton goReservationButton;
     private javax.swing.JButton goRestaurantButton;
     private javax.swing.JButton goRoomServiceButton;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

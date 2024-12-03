@@ -4,17 +4,25 @@
  */
 package deu.hms.login;
 
+import deu.hms.mainmenu.MasterFrame;
+import deu.hms.mainmenu.StaffFrame;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author choun
  */
 public class LogInFrame extends javax.swing.JFrame {
 
+    private String id = null;
+    private String passward = null;
+
     /**
      * Creates new form LogInFrame
      */
     public LogInFrame() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -49,8 +57,18 @@ public class LogInFrame extends javax.swing.JFrame {
         jLabel3.setText("비밀번호");
 
         logInButton.setText("로그인");
+        logInButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logInButtonActionPerformed(evt);
+            }
+        });
 
         endButton.setText("닫기");
+        endButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                endButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -118,6 +136,32 @@ public class LogInFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void logInButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logInButtonActionPerformed
+        id = idInputField.getText();
+        passward = String.valueOf(passwordInputField.getPassword());
+
+        AccountApplication account = new AccountApplication();
+        String check = account.AccountCheck(id, passward);
+        if (check != null) {
+            if (check.equals("관리자")) {
+                MasterFrame MF = new MasterFrame();
+                MF.setVisible(true);
+                dispose();
+            } else if (check.equals("직원")) {
+                StaffFrame SF = new StaffFrame();
+                SF.setVisible(true);
+                dispose();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "아이디 혹은 비밀번호가 일치하지 않습니다.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+    }//GEN-LAST:event_logInButtonActionPerformed
+
+    private void endButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_endButtonActionPerformed
+        dispose();
+    }//GEN-LAST:event_endButtonActionPerformed
 
     /**
      * @param args the command line arguments

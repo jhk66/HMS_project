@@ -21,18 +21,29 @@ public class MenuLoad {
 
     String paths = System.getProperty("user.dir");
     File menuFile = new File(paths + "/menuList.txt");
+    
+    public MenuLoad(DefaultTableModel model){
+        menuRead();
+        for (int i = 0; i < serviceLoad.size(); i++) {
+            model.addRow(new Object[]{
+                serviceLoad.get(i).getPart(),
+                serviceLoad.get(i).getMenu(),
+                serviceLoad.get(i).getPrice()
+            });
+        }
+    }
 
     public MenuLoad(DefaultTableModel model, String part) {
         menuRead();
         for (int i = 0; i < serviceLoad.size(); i++) {
-                if (serviceLoad.get(i).getPart().equals(part)) {
-                    model.addRow(new Object[]{serviceLoad.get(i).getMenu(),
-                        serviceLoad.get(i).getPrice()});
-                }
+            if (serviceLoad.get(i).getPart().equals(part)) {
+                model.addRow(new Object[]{serviceLoad.get(i).getMenu(),
+                    serviceLoad.get(i).getPrice()});
             }
+        }
     }
 
-    public void menuRead() {
+    private void menuRead() {
         String line;
         try (BufferedReader br = new BufferedReader(new FileReader(menuFile))) {
             while ((line = br.readLine()) != null) {
@@ -42,5 +53,10 @@ public class MenuLoad {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public ArrayList getList(){
+        menuRead();
+        return serviceLoad;
     }
 }

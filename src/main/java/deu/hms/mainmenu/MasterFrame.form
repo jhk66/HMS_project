@@ -47,15 +47,17 @@
                               <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Component id="goCheckInOutButton" max="32767" attributes="0"/>
-                                  <Component id="goHotelManagementButton" pref="106" max="32767" attributes="0"/>
+                                  <Component id="goHotelManagementButton" max="32767" attributes="0"/>
                                   <Component id="goReportButton" alignment="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
-                      <EmptySpace min="0" pref="42" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="38" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <Component id="jButton1" min="-2" pref="76" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="logOutButton" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -104,7 +106,10 @@
                       <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <Component id="logOutButton" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="logOutButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace pref="9" max="32767" attributes="0"/>
           </Group>
       </Group>
@@ -128,6 +133,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="&#xc608;&#xc57d; &#xad00;&#xb9ac;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="goReservationButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="goCheckInOutButton">
       <Properties>
@@ -146,11 +154,17 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="&#xc2dd;&#xc0ac;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="goRestaurantButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="goRoomServiceButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="&#xb8f8;&#xc11c;&#xbe44;&#xc2a4;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="goRoomServiceButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
@@ -159,18 +173,35 @@
     </Component>
     <Component class="javax.swing.JButton" name="goHotelManagementButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#xd638;&#xd154; &#xad00;&#xb9ac;"/>
+        <Property name="text" type="java.lang.String" value="&#xd638;&#xd154; &#xae30;&#xb2a5; &#xad00;&#xb9ac;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="goHotelManagementButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="goReportButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#xbcf4;&#xace0;&#xc11c;"/>
+        <Property name="text" type="java.lang.String" value="&#xd638;&#xd154; &#xc810;&#xc720;&#xc728;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="goReportButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="logOutButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="&#xb85c;&#xadf8;&#xc544;&#xc6c3;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="logOutButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButton1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&#xb2eb;&#xae30;"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

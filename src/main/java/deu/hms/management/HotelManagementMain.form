@@ -78,21 +78,33 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="&#xac1d;&#xc2e4; &#xad00;&#xb9ac;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="roomManagmentButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="hotelServiceManagementButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="&#xd638;&#xd154; &#xc11c;&#xbe44;&#xc2a4; &#xad00;&#xb9ac;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="hotelServiceManagementButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="accountManagementButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="&#xacc4;&#xc815; &#xad00;&#xb9ac;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="accountManagementButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="endButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="&#xb2eb;&#xae30;"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="endButtonActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

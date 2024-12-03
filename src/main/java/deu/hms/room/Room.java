@@ -12,8 +12,13 @@ public class Room {
     
     private String roomNum;
     private String isBook;
-    private String firstName;
-    private String lastName;
+    private String name;
+
+    public Room(String roomNum, String isBook, String name) {
+        this.roomNum = roomNum;
+        this.isBook = isBook;
+        this.name = name;
+    }
 
     public String getRoomNum() {
         return roomNum;
@@ -23,12 +28,8 @@ public class Room {
         return isBook;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
+    public String getName() {
+        return name;
     }
 
     public void setRoomNum(String roomNum) {
@@ -39,13 +40,8 @@ public class Room {
         this.isBook = isBook;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    
 }

@@ -1,0 +1,4 @@
+admin	1234	관리자
+master	admin	관리자
+staff	4321	직원
+manager	1122	직원

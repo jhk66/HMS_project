@@ -4,17 +4,47 @@
  */
 package deu.hms.reservation;
 
+import java.awt.Color;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author choun
  */
 public class ReservationFrame extends javax.swing.JFrame {
 
+    ArrayList<Reservation> reservationList = new ArrayList<>();
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+    private String number = null;
+    private String name = null;
+    private String address = null;
+    private String tel = null;
+    private String people = null;
+    private String roomNum = null;
+    private String payType = null;
+    private String price = null;
+    private String checkInDate = null;
+    private String checkOutDate = null;
+    private String cardNum = null;
+    private final String state = "예약";
+
     /**
      * Creates new form ReservationFrame
      */
     public ReservationFrame() {
         initComponents();
+        setLocationRelativeTo(null);
+
+        endButton.requestFocusInWindow();
+        firstNameField.setText("\'성\'");
+        firstNameField.setForeground(Color.GRAY);
+        lastNameField.setText("\'이름\'");
+        lastNameField.setForeground(Color.GRAY);
+
     }
 
     /**
@@ -36,8 +66,7 @@ public class ReservationFrame extends javax.swing.JFrame {
         jTextField3 = new javax.swing.JTextField();
         middleTelNum = new javax.swing.JTextField();
         lastTelNum = new javax.swing.JTextField();
-        serchAddressButton = new javax.swing.JButton();
-        showAddressField = new javax.swing.JTextField();
+        addressField = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -55,9 +84,13 @@ public class ReservationFrame extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
         cashRadioButton = new javax.swing.JRadioButton();
         cardRadioButton = new javax.swing.JRadioButton();
-        cardRegistButton = new javax.swing.JButton();
-        registButton = new javax.swing.JButton();
+        addButton = new javax.swing.JButton();
         endButton = new javax.swing.JButton();
+        jLabel14 = new javax.swing.JLabel();
+        cardNumField1 = new javax.swing.JTextField();
+        cardNumField2 = new javax.swing.JTextField();
+        cardNumField3 = new javax.swing.JTextField();
+        cardNumField4 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -73,28 +106,30 @@ public class ReservationFrame extends javax.swing.JFrame {
         jLabel5.setFont(new java.awt.Font("맑은 고딕", 0, 14)); // NOI18N
         jLabel5.setText("주소");
 
-        firstNameField.setText("성");
-        firstNameField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                firstNameFieldActionPerformed(evt);
+        firstNameField.setName(""); // NOI18N
+        firstNameField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                firstNameFieldFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                firstNameFieldFocusLost(evt);
             }
         });
 
-        lastNameField.setText("이름");
+        lastNameField.setMinimumSize(new java.awt.Dimension(70, 23));
+        lastNameField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                lastNameFieldFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                lastNameFieldFocusLost(evt);
+            }
+        });
 
         jTextField3.setText("010");
         jTextField3.setEnabled(false);
 
-        serchAddressButton.setText("주소검색");
-
-        showAddressField.setText("주소표시");
-        showAddressField.setAutoscrolls(false);
-        showAddressField.setEnabled(false);
-        showAddressField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showAddressFieldActionPerformed(evt);
-            }
-        });
+        addressField.setAutoscrolls(false);
 
         jLabel6.setFont(new java.awt.Font("맑은 고딕", 0, 14)); // NOI18N
         jLabel6.setText("체크인날짜");
@@ -108,7 +143,17 @@ public class ReservationFrame extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("맑은 고딕", 0, 14)); // NOI18N
         jLabel9.setText("객실번호");
 
-        checkAvailableButton.setText("예약가능여부확인");
+        roomNumField.setEditable(false);
+        roomNumField.setAutoscrolls(false);
+        roomNumField.setDisabledTextColor(new java.awt.Color(255, 255, 255));
+        roomNumField.setFocusable(false);
+
+        checkAvailableButton.setText("예약가능객실확인");
+        checkAvailableButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkAvailableButtonActionPerformed(evt);
+            }
+        });
 
         showRoomPriceButton.setText("객실금액확인");
         showRoomPriceButton.addActionListener(new java.awt.event.ActionListener() {
@@ -120,7 +165,9 @@ public class ReservationFrame extends javax.swing.JFrame {
         jLabel10.setFont(new java.awt.Font("맑은 고딕", 0, 14)); // NOI18N
         jLabel10.setText("금액");
 
-        totalPriceField.setEnabled(false);
+        totalPriceField.setEditable(false);
+        totalPriceField.setDisabledTextColor(new java.awt.Color(255, 255, 255));
+        totalPriceField.setFocusable(false);
 
         jLabel11.setFont(new java.awt.Font("맑은 고딕", 0, 14)); // NOI18N
         jLabel11.setText("명");
@@ -133,15 +180,36 @@ public class ReservationFrame extends javax.swing.JFrame {
 
         cashRadioButton.setFont(new java.awt.Font("맑은 고딕", 0, 14)); // NOI18N
         cashRadioButton.setText("현금");
+        cashRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cashRadioButtonActionPerformed(evt);
+            }
+        });
 
         cardRadioButton.setFont(new java.awt.Font("맑은 고딕", 0, 14)); // NOI18N
         cardRadioButton.setText("카드");
+        cardRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cardRadioButtonActionPerformed(evt);
+            }
+        });
 
-        cardRegistButton.setText("카드등록");
-
-        registButton.setText("등록");
+        addButton.setText("등록");
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
 
         endButton.setText("닫기");
+        endButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                endButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel14.setFont(new java.awt.Font("맑은 고딕", 0, 14)); // NOI18N
+        jLabel14.setText("카드번호");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -161,27 +229,12 @@ public class ReservationFrame extends javax.swing.JFrame {
                             .addComponent(jLabel2)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jLabel13)
-                                .addComponent(jLabel9)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel9)
+                                .addComponent(jLabel14)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(firstNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(lastNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addComponent(serchAddressButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(middleTelNum, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(lastTelNum, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                         .addComponent(checkOutDateChooser, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
                                         .addComponent(checkInDateChooser, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -201,11 +254,31 @@ public class ReservationFrame extends javax.swing.JFrame {
                                                 .addGap(10, 10, 10)
                                                 .addComponent(checkAvailableButton)
                                                 .addGap(6, 6, 6)
-                                                .addComponent(showRoomPriceButton)))))
-                                .addGap(0, 46, Short.MAX_VALUE))))
+                                                .addComponent(showRoomPriceButton))))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(middleTelNum, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(lastTelNum, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(firstNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(lastNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 40, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cardNumField1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cardNumField2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cardNumField3, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cardNumField4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(56, 56, 56)
-                        .addComponent(showAddressField, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(addressField, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -214,23 +287,25 @@ public class ReservationFrame extends javax.swing.JFrame {
                         .addComponent(jLabel3))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(158, 158, 158)
-                        .addComponent(cashRadioButton)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(cashRadioButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cardRadioButton)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardRadioButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardRegistButton))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(169, 169, 169)
-                        .addComponent(registButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
                         .addComponent(endButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(172, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(208, 208, 208))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(jLabel1)
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -245,11 +320,9 @@ public class ReservationFrame extends javax.swing.JFrame {
                 .addGap(7, 7, 7)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(serchAddressButton))
+                .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(showAddressField, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(addressField, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel6)
@@ -279,30 +352,178 @@ public class ReservationFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
                     .addComponent(cashRadioButton)
-                    .addComponent(cardRadioButton)
-                    .addComponent(cardRegistButton))
-                .addGap(18, 18, 18)
+                    .addComponent(cardRadioButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(registButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel14)
+                    .addComponent(cardNumField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cardNumField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cardNumField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cardNumField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(endButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(14, 14, 14))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void firstNameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_firstNameFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_firstNameFieldActionPerformed
+    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+        StringBuilder errorMessage = new StringBuilder();
 
-    private void showAddressFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showAddressFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_showAddressFieldActionPerformed
+        if (firstNameField.getText().equals("'성'") && lastNameField.getText().equals("'이름'")) {
+            errorMessage.append("성과 이름을 적어주세요\n");
+        } else if (firstNameField.getText().equals("'성'")) {
+            errorMessage.append("성을 적어주세요\n");
+        } else if (lastNameField.getText().equals("'이름'")) {
+            errorMessage.append("이름을 적어주세요\n");
+        } else {
+            name = firstNameField.getText() + lastNameField.getText();
+        }
+
+        if (addressField.getText().isEmpty()) {
+            errorMessage.append("주소를 적어주세요\n");
+        } else {
+            address = addressField.getText();
+        }
+        
+        if (middleTelNum.getText().isEmpty() || lastTelNum.getText().isEmpty()) {
+            errorMessage.append("전화번호를 모두 입력해주세요.\n");
+        } else if (!middleTelNum.getText().matches("\\d{4}") || !lastTelNum.getText().matches("\\d{4}")) {
+            errorMessage.append("전화번호는 각각 4자리 숫자여야 합니다.\n");
+        } else {
+            tel = "010-" + middleTelNum.getText() + "-" + lastTelNum.getText();
+        }
+
+        if (numOfPeopleField.getText().isEmpty()) {
+            errorMessage.append("인원수를 적어주세요\n");
+        } else {
+            people = numOfPeopleField.getText();
+        }
+
+        if (roomNumField.getText().isEmpty()) {
+            errorMessage.append("방번호를 적어주세요\n");
+        } else {
+            roomNum = roomNumField.getText();
+        }
+
+        if (!cashRadioButton.isSelected() && !cardRadioButton.isSelected()) {
+            errorMessage.append("결제수단을 선택해주세요\n");
+        } else if (cashRadioButton.isSelected()) {
+            payType = "현금";
+            cardNum = null;
+        } else if (cardRadioButton.isSelected()) {
+            if (cardNumField1.getText().isEmpty() || cardNumField2.getText().isEmpty() || cardNumField3.getText().isEmpty() || cardNumField4.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "카드번호를 입력하지않았습니다.\n 체크인당일 오후 6시 이전까지 입력하지 않을 시, 예약이 취소됩니다.");
+                payType = "카드";
+                cardNum = null;
+            }else{
+                payType = "카드";
+                cardNum = cardNumField1.getText() + "-" + cardNumField1.getText() + "-" + cardNumField1.getText() + "-" + cardNumField1.getText();
+            }
+        }
+
+        if (checkInDateChooser.getDate() == null) {
+            errorMessage.append("체크인 날짜를 선택해주세요\n");
+        }
+        if (checkOutDateChooser.getDate() == null) {
+            errorMessage.append("체크아웃 날짜를 선택해주세요\n");
+        } 
+        if (checkInDateChooser.getDate() != null && checkOutDateChooser.getDate() != null && checkOutDateChooser.getDate().before(checkInDateChooser.getDate())) {
+            errorMessage.append("체크아웃 날짜는 체크인 날짜보다 이후여야 합니다.\n");
+        }
+
+        if (errorMessage.length() > 0) {
+            JOptionPane.showMessageDialog(null, errorMessage.toString(), "오류", JOptionPane.ERROR_MESSAGE);
+        } else {
+            ReservationLoad RL = new ReservationLoad();
+            number = RL.getNextNum();
+            price = totalPriceField.getText();
+            checkInDate = dateFormat.format(checkInDateChooser.getDate());
+            checkOutDate = dateFormat.format(checkOutDateChooser.getDate());
+            
+            Reservation save = new Reservation(number, name, address, tel, people, roomNum, payType, price, checkInDate, checkOutDate, state);
+            new SaveCard(name, cardNum);
+            new ReservationSave(save);
+            
+            JOptionPane.showMessageDialog(null, "예약정보가 저장이 완료되었습니다.");
+            dispose();
+        }
+
+
+    }//GEN-LAST:event_addButtonActionPerformed
+
+    private void firstNameFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_firstNameFieldFocusGained
+        if (firstNameField.getText().equals("\'성\'")) {
+            firstNameField.setText("");
+            firstNameField.setForeground(Color.BLACK);  // 사용자가 입력하는 텍스트 색상
+        }
+    }//GEN-LAST:event_firstNameFieldFocusGained
+
+    private void firstNameFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_firstNameFieldFocusLost
+        if (firstNameField.getText().isEmpty()) {
+            firstNameField.setForeground(Color.GRAY);  // 기본 텍스트 색상
+            firstNameField.setText("\'성\'");
+        }
+    }//GEN-LAST:event_firstNameFieldFocusLost
+
+    private void lastNameFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_lastNameFieldFocusGained
+        if (lastNameField.getText().equals("\'이름\'")) {
+            lastNameField.setText("");
+            lastNameField.setForeground(Color.BLACK);  // 사용자가 입력하는 텍스트 색상
+        }
+    }//GEN-LAST:event_lastNameFieldFocusGained
+
+    private void lastNameFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_lastNameFieldFocusLost
+        if (lastNameField.getText().isEmpty()) {
+            lastNameField.setForeground(Color.GRAY);  // 기본 텍스트 색상
+            lastNameField.setText("\'이름\'");
+        }
+    }//GEN-LAST:event_lastNameFieldFocusLost
+
+    private void cashRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cashRadioButtonActionPerformed
+        if (cashRadioButton.isSelected()) {
+            cardRadioButton.setSelected(false);
+            cardNumField1.setEnabled(false);
+            cardNumField2.setEnabled(false);
+            cardNumField3.setEnabled(false);
+            cardNumField4.setEnabled(false);
+        }
+    }//GEN-LAST:event_cashRadioButtonActionPerformed
+
+    private void cardRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cardRadioButtonActionPerformed
+        if (cardRadioButton.isSelected()) {
+            cashRadioButton.setSelected(false);
+            cardNumField1.setEnabled(true);
+            cardNumField2.setEnabled(true);
+            cardNumField3.setEnabled(true);
+            cardNumField4.setEnabled(true);
+        } 
+    }//GEN-LAST:event_cardRadioButtonActionPerformed
+
+    private void endButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_endButtonActionPerformed
+        dispose();
+    }//GEN-LAST:event_endButtonActionPerformed
+
+    public static void selectRoomFields(String roomNumber) {
+        roomNumField.setText(roomNumber);
+    }
+    
+    public static void RoomPriceField(String roomPrice){
+        totalPriceField.setText(roomPrice);
+    }
+    
+    private void checkAvailableButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkAvailableButtonActionPerformed
+        RoomReservationInfoFrame RRIF = new RoomReservationInfoFrame();
+        RRIF.setVisible(true);
+    }//GEN-LAST:event_checkAvailableButtonActionPerformed
 
     private void showRoomPriceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showRoomPriceButtonActionPerformed
-        // TODO add your handling code here:
+        RoomPriceFrame RPF = new RoomPriceFrame();
+        RPF.setVisible(true);
     }//GEN-LAST:event_showRoomPriceButtonActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -339,8 +560,13 @@ public class ReservationFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addButton;
+    private javax.swing.JTextField addressField;
+    private javax.swing.JTextField cardNumField1;
+    private javax.swing.JTextField cardNumField2;
+    private javax.swing.JTextField cardNumField3;
+    private javax.swing.JTextField cardNumField4;
     private javax.swing.JRadioButton cardRadioButton;
-    private javax.swing.JButton cardRegistButton;
     private javax.swing.JRadioButton cashRadioButton;
     private javax.swing.JButton checkAvailableButton;
     private com.toedter.calendar.JDateChooser checkInDateChooser;
@@ -352,6 +578,7 @@ public class ReservationFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -365,11 +592,8 @@ public class ReservationFrame extends javax.swing.JFrame {
     private javax.swing.JTextField lastTelNum;
     private javax.swing.JTextField middleTelNum;
     private javax.swing.JTextField numOfPeopleField;
-    private javax.swing.JButton registButton;
-    private javax.swing.JTextField roomNumField;
-    private javax.swing.JButton serchAddressButton;
-    private javax.swing.JTextField showAddressField;
+    public static javax.swing.JTextField roomNumField;
     private javax.swing.JButton showRoomPriceButton;
-    private javax.swing.JTextField totalPriceField;
+    public static javax.swing.JTextField totalPriceField;
     // End of variables declaration//GEN-END:variables
 }

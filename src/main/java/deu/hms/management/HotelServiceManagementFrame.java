@@ -4,17 +4,47 @@
  */
 package deu.hms.management;
 
+import deu.hms.restaurant.MenuLoad;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import javax.swing.AbstractAction;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author choun
  */
 public class HotelServiceManagementFrame extends javax.swing.JFrame {
 
+    String paths = System.getProperty("user.dir");
+    File menuFile = new File(paths + "/menuList.txt");
+
     /**
      * Creates new form HotelServiceManagementFrame
      */
     public HotelServiceManagementFrame() {
         initComponents();
+        loadServiceList();
+        setLocationRelativeTo(null);
+        showServiceTable.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ENTER"), "commitEdit");
+        showServiceTable.getActionMap().put("commitEdit", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (showServiceTable.getCellEditor() != null) {
+                    showServiceTable.getCellEditor().stopCellEditing();
+                }
+            }
+        });
     }
 
     /**
@@ -32,7 +62,7 @@ public class HotelServiceManagementFrame extends javax.swing.JFrame {
         endButton = new javax.swing.JButton();
         addButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
-        changeButton = new javax.swing.JButton();
+        saveButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -41,24 +71,41 @@ public class HotelServiceManagementFrame extends javax.swing.JFrame {
 
         showServiceTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
-                "종류", "메뉴", "가격"
+                "서비스", "메뉴", "가격"
             }
         ));
         jScrollPane1.setViewportView(showServiceTable);
 
         endButton.setText("닫기");
+        endButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                endButtonActionPerformed(evt);
+            }
+        });
 
         addButton.setText("등록");
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
 
         deleteButton.setText("삭제");
+        deleteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButtonActionPerformed(evt);
+            }
+        });
 
-        changeButton.setText("수정");
+        saveButton.setText("저장");
+        saveButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -67,7 +114,9 @@ public class HotelServiceManagementFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(endButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(endButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(176, 176, 176)
@@ -76,12 +125,12 @@ public class HotelServiceManagementFrame extends javax.swing.JFrame {
                                 .addGap(14, 14, 14)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(103, 103, 103)
-                        .addComponent(changeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addGap(115, 115, 115)
+                        .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(14, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -95,7 +144,7 @@ public class HotelServiceManagementFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addButton)
                     .addComponent(deleteButton)
-                    .addComponent(changeButton))
+                    .addComponent(saveButton))
                 .addGap(33, 33, 33)
                 .addComponent(endButton)
                 .addGap(16, 16, 16))
@@ -103,6 +152,113 @@ public class HotelServiceManagementFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void loadServiceList() {
+        DefaultTableModel menuModel = (DefaultTableModel) showServiceTable.getModel();
+        new MenuLoad(menuModel);
+    }
+
+    private void endButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_endButtonActionPerformed
+        dispose();
+    }//GEN-LAST:event_endButtonActionPerformed
+
+    private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
+         if (showServiceTable.getCellEditor() != null) {
+            showServiceTable.getCellEditor().stopCellEditing();
+        }
+        new ChangeSaveFile(showServiceTable, menuFile);
+        int selectedRow = showServiceTable.getSelectedRow();
+        String menu = null;
+        String price = null;
+        if(selectedRow > -1 ){
+            menu = showServiceTable.getValueAt(selectedRow, 1).toString();
+            price = showServiceTable.getValueAt(selectedRow, 2).toString();
+            JOptionPane.showMessageDialog(null, "메뉴 : \"" + menu + "\" 이/가 " + price + "으로 가격이 변경되었습니다." );
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "변경사항이 저장되었습니다." );
+        }
+    }//GEN-LAST:event_saveButtonActionPerformed
+
+    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+        // 사용자 정의 입력 패널 생성
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
+
+        JLabel serviceNameLabel = new JLabel("서비스");
+        serviceNameLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+        serviceNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        inputPanel.add(serviceNameLabel);
+
+        JTextField serviceNameField = new JTextField();
+        serviceNameField.setPreferredSize(new Dimension(300, 50));
+        inputPanel.add(serviceNameField);
+
+        JLabel menuLabel = new JLabel("메뉴");
+        menuLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+        menuLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        inputPanel.add(menuLabel);
+
+        JTextField menuField = new JTextField();
+        menuField.setPreferredSize(new Dimension(300, 50));
+        inputPanel.add(menuField);
+
+        JLabel priceLabel = new JLabel("가격");
+        priceLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+        priceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        inputPanel.add(priceLabel);
+
+        JTextField priceField = new JTextField();
+        priceField.setPreferredSize(new Dimension(300, 50));
+        inputPanel.add(priceField);
+
+        boolean validInput = false;
+
+        while (!validInput) {
+            int result = JOptionPane.showConfirmDialog(this, inputPanel, "서비스 추가", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (result == JOptionPane.OK_OPTION) {
+                String serviceName = serviceNameField.getText().trim();
+                String menu = menuField.getText().trim();
+                String priceString = priceField.getText().trim();
+
+                if (!serviceName.equals("식사") && !serviceName.equals("룸서비스")) {
+                    JOptionPane.showMessageDialog(this, "서비스 이름은 '식사' 또는 '룸서비스'여야 합니다.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                if (menu.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "메뉴를 입력하세요.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                if (priceString.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "가격을 입력하세요.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+
+                try {
+                    int price = Integer.parseInt(priceString);
+                    DefaultTableModel model = (DefaultTableModel) showServiceTable.getModel();
+                    model.addRow(new Object[]{serviceName, menu, price});
+                    validInput = true;
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "올바른 가격을 입력하세요.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+            } else {
+                break;
+            }
+        }
+    }//GEN-LAST:event_addButtonActionPerformed
+
+    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+        int selectedRow = showServiceTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "삭제할 행을 선택하세요.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        DefaultTableModel model = (DefaultTableModel) showServiceTable.getModel();
+        model.removeRow(selectedRow);
+    }//GEN-LAST:event_deleteButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -141,11 +297,11 @@ public class HotelServiceManagementFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
-    private javax.swing.JButton changeButton;
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton endButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton saveButton;
     private javax.swing.JTable showServiceTable;
     // End of variables declaration//GEN-END:variables
 }

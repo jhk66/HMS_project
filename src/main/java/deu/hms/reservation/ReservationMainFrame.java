@@ -4,17 +4,28 @@
  */
 package deu.hms.reservation;
 
+import deu.hms.management.ChangeSaveFile;
+import java.io.File;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author choun
  */
 public class ReservationMainFrame extends javax.swing.JFrame {
+    
+    
+    String paths = System.getProperty("user.dir");
+    File reservationFile = new File(paths + "/ReservationList.txt");
 
     /**
      * Creates new form ReservationMainFrame
      */
     public ReservationMainFrame() {
         initComponents();
+        setLocationRelativeTo(null);
+        loadReservationList();
     }
 
     /**
@@ -31,8 +42,10 @@ public class ReservationMainFrame extends javax.swing.JFrame {
         showReservationTable = new javax.swing.JTable();
         endButton = new javax.swing.JButton();
         deleteInfoButton = new javax.swing.JButton();
-        changeInfoButton = new javax.swing.JButton();
+        saveInfoButton = new javax.swing.JButton();
         addReservationButton = new javax.swing.JButton();
+        refreshButton = new javax.swing.JButton();
+        clientCardInfoButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -44,59 +57,165 @@ public class ReservationMainFrame extends javax.swing.JFrame {
 
             },
             new String [] {
-                "고유번호", "이름", "전화번호", "주소", "인원수", "체크인날짜", "체크아웃날짜", "인원수", "방번호", "숙박비", "결제수단", "상태"
+                "번호", "이름", "주소", "전화번호", "인원수", "방번호", "결제수단", "금액", "체크인", "체크아웃", "상태"
             }
         ));
+        showReservationTable.setShowVerticalLines(true);
         jScrollPane1.setViewportView(showReservationTable);
+        if (showReservationTable.getColumnModel().getColumnCount() > 0) {
+            showReservationTable.getColumnModel().getColumn(0).setMinWidth(40);
+            showReservationTable.getColumnModel().getColumn(0).setMaxWidth(40);
+            showReservationTable.getColumnModel().getColumn(1).setMinWidth(50);
+            showReservationTable.getColumnModel().getColumn(1).setMaxWidth(50);
+            showReservationTable.getColumnModel().getColumn(2).setMaxWidth(500);
+            showReservationTable.getColumnModel().getColumn(3).setMinWidth(120);
+            showReservationTable.getColumnModel().getColumn(3).setMaxWidth(120);
+            showReservationTable.getColumnModel().getColumn(4).setMinWidth(50);
+            showReservationTable.getColumnModel().getColumn(4).setMaxWidth(50);
+            showReservationTable.getColumnModel().getColumn(5).setMinWidth(50);
+            showReservationTable.getColumnModel().getColumn(5).setMaxWidth(50);
+            showReservationTable.getColumnModel().getColumn(6).setMinWidth(60);
+            showReservationTable.getColumnModel().getColumn(6).setMaxWidth(60);
+            showReservationTable.getColumnModel().getColumn(7).setMinWidth(60);
+            showReservationTable.getColumnModel().getColumn(7).setMaxWidth(60);
+            showReservationTable.getColumnModel().getColumn(8).setMinWidth(80);
+            showReservationTable.getColumnModel().getColumn(8).setMaxWidth(80);
+            showReservationTable.getColumnModel().getColumn(9).setMinWidth(80);
+            showReservationTable.getColumnModel().getColumn(9).setMaxWidth(80);
+            showReservationTable.getColumnModel().getColumn(10).setMinWidth(50);
+            showReservationTable.getColumnModel().getColumn(10).setMaxWidth(50);
+        }
 
         endButton.setText("닫기");
+        endButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                endButtonActionPerformed(evt);
+            }
+        });
 
         deleteInfoButton.setText("삭제");
+        deleteInfoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteInfoButtonActionPerformed(evt);
+            }
+        });
 
-        changeInfoButton.setText("수정");
+        saveInfoButton.setText("저장");
+        saveInfoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveInfoButtonActionPerformed(evt);
+            }
+        });
 
         addReservationButton.setText("예약등록");
+        addReservationButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addReservationButtonActionPerformed(evt);
+            }
+        });
+
+        refreshButton.setText("새로고침");
+        refreshButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshButtonActionPerformed(evt);
+            }
+        });
+
+        clientCardInfoButton.setText("고객 카드 정보");
+        clientCardInfoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clientCardInfoButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(356, 356, 356)
-                .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(15, Short.MAX_VALUE)
+                .addContainerGap(16, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(151, 151, 151)
+                        .addComponent(clientCardInfoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(refreshButton, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 909, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(addReservationButton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(changeInfoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(saveInfoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(deleteInfoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(endButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 829, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(16, 16, 16))
+                        .addComponent(endButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(15, 15, 15))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(refreshButton)
+                    .addComponent(clientCardInfoButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(endButton)
                     .addComponent(deleteInfoButton)
-                    .addComponent(changeInfoButton)
+                    .addComponent(saveInfoButton)
                     .addComponent(addReservationButton))
                 .addContainerGap(31, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void endButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_endButtonActionPerformed
+        dispose();
+    }//GEN-LAST:event_endButtonActionPerformed
+
+    private void saveInfoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveInfoButtonActionPerformed
+        if (showReservationTable.getCellEditor() != null) {
+            showReservationTable.getCellEditor().stopCellEditing();
+        }
+        new ChangeSaveFile(showReservationTable, reservationFile);
+        JOptionPane.showMessageDialog(null, "변경사항이 저장되었습니다." );
+    }//GEN-LAST:event_saveInfoButtonActionPerformed
+
+    private void addReservationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addReservationButtonActionPerformed
+        ReservationFrame RF = new ReservationFrame();
+        RF.setVisible(true);
+    }//GEN-LAST:event_addReservationButtonActionPerformed
+
+    private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
+        new ReservationAutoCancel();
+        loadReservationList();
+    }//GEN-LAST:event_refreshButtonActionPerformed
+
+    private void deleteInfoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteInfoButtonActionPerformed
+        int selectedRow = showReservationTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "삭제할 행을 선택하세요.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        DefaultTableModel model = (DefaultTableModel) showReservationTable.getModel();
+        model.removeRow(selectedRow);
+    }//GEN-LAST:event_deleteInfoButtonActionPerformed
+
+    private void clientCardInfoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clientCardInfoButtonActionPerformed
+        ClientCardInfoFrame CCF = new ClientCardInfoFrame();
+        CCF.setVisible(true);
+    }//GEN-LAST:event_clientCardInfoButtonActionPerformed
+
+    private void loadReservationList() {
+        DefaultTableModel reservationModel = (DefaultTableModel) showReservationTable.getModel();
+        reservationModel.setNumRows(0);
+        new ReservationLoad(reservationModel);
+    }
 
     /**
      * @param args the command line arguments
@@ -135,11 +254,13 @@ public class ReservationMainFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addReservationButton;
-    private javax.swing.JButton changeInfoButton;
+    private javax.swing.JButton clientCardInfoButton;
     private javax.swing.JButton deleteInfoButton;
     private javax.swing.JButton endButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton refreshButton;
+    private javax.swing.JButton saveInfoButton;
     private javax.swing.JTable showReservationTable;
     // End of variables declaration//GEN-END:variables
 }

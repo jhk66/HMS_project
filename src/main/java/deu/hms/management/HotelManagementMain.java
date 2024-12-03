@@ -15,6 +15,7 @@ public class HotelManagementMain extends javax.swing.JFrame {
      */
     public HotelManagementMain() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -38,12 +39,32 @@ public class HotelManagementMain extends javax.swing.JFrame {
         jLabel1.setText("호텔 관리");
 
         roomManagmentButton.setText("객실 관리");
+        roomManagmentButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                roomManagmentButtonActionPerformed(evt);
+            }
+        });
 
         hotelServiceManagementButton.setText("호텔 서비스 관리");
+        hotelServiceManagementButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hotelServiceManagementButtonActionPerformed(evt);
+            }
+        });
 
         accountManagementButton.setText("계정 관리");
+        accountManagementButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                accountManagementButtonActionPerformed(evt);
+            }
+        });
 
         endButton.setText("닫기");
+        endButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                endButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -84,6 +105,25 @@ public class HotelManagementMain extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void endButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_endButtonActionPerformed
+        dispose();
+    }//GEN-LAST:event_endButtonActionPerformed
+
+    private void hotelServiceManagementButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hotelServiceManagementButtonActionPerformed
+        HotelServiceManagementFrame HSMF = new HotelServiceManagementFrame();
+        HSMF.setVisible(true);
+    }//GEN-LAST:event_hotelServiceManagementButtonActionPerformed
+
+    private void roomManagmentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_roomManagmentButtonActionPerformed
+        RoomManagementFrame RMF = new RoomManagementFrame();
+        RMF.setVisible(true);
+    }//GEN-LAST:event_roomManagmentButtonActionPerformed
+
+    private void accountManagementButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accountManagementButtonActionPerformed
+        AccountManagementFrame AMF = new AccountManagementFrame();
+        AMF.setVisible(true);
+    }//GEN-LAST:event_accountManagementButtonActionPerformed
 
     /**
      * @param args the command line arguments

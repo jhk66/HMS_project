@@ -4,17 +4,34 @@
  */
 package deu.hms.management;
 
+import deu.hms.login.AccountApplication;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.io.File;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author choun
  */
 public class AccountManagementFrame extends javax.swing.JFrame {
+    AccountApplication account = new AccountApplication();
+    String paths = System.getProperty("user.dir");
+    File accountFile = new File(paths + "/LoginAccount.txt");
 
     /**
      * Creates new form AccountManagementFrame
      */
     public AccountManagementFrame() {
         initComponents();
+        loadAccountList();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -32,7 +49,7 @@ public class AccountManagementFrame extends javax.swing.JFrame {
         endButton = new javax.swing.JButton();
         addButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
-        changeButton = new javax.swing.JButton();
+        saveButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -41,10 +58,7 @@ public class AccountManagementFrame extends javax.swing.JFrame {
 
         showAccountTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
                 "아이디", "비밀번호", "권한"
@@ -53,35 +67,56 @@ public class AccountManagementFrame extends javax.swing.JFrame {
         jScrollPane1.setViewportView(showAccountTable);
 
         endButton.setText("닫기");
+        endButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                endButtonActionPerformed(evt);
+            }
+        });
 
         addButton.setText("등록");
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
 
         deleteButton.setText("삭제");
+        deleteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButtonActionPerformed(evt);
+            }
+        });
 
-        changeButton.setText("수정");
+        saveButton.setText("저장");
+        saveButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(endButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(194, 194, 194)
-                                .addComponent(jLabel1))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(120, 120, 120)
-                        .addComponent(changeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(194, 194, 194)
+                            .addComponent(jLabel1))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(18, 18, 18)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 452, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(138, 138, 138)
+                            .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(endButton, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -95,7 +130,7 @@ public class AccountManagementFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addButton)
                     .addComponent(deleteButton)
-                    .addComponent(changeButton))
+                    .addComponent(saveButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
                 .addComponent(endButton)
                 .addGap(18, 18, 18))
@@ -104,6 +139,102 @@ public class AccountManagementFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void endButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_endButtonActionPerformed
+        dispose();
+    }//GEN-LAST:event_endButtonActionPerformed
+
+    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
+
+        JLabel idLabel = new JLabel("아이디");
+        idLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+        idLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        inputPanel.add(idLabel);
+
+        JTextField idField = new JTextField();
+        idField.setPreferredSize(new Dimension(300, 50));
+        inputPanel.add(idField);
+
+        JLabel passwardLabel = new JLabel("비밀번호");
+        passwardLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+        passwardLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        inputPanel.add(passwardLabel);
+
+        JTextField passwardField = new JTextField();
+        passwardField.setPreferredSize(new Dimension(300, 50));
+        inputPanel.add(passwardField);
+
+        JLabel positionLabel = new JLabel("권한");
+        positionLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16)); 
+        positionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        inputPanel.add(positionLabel);
+
+        JTextField positionField = new JTextField();
+        positionField.setPreferredSize(new Dimension(300, 50));
+        inputPanel.add(positionField);
+
+        boolean validInput = false;
+
+        while (!validInput) {
+            int result = JOptionPane.showConfirmDialog(this, inputPanel, "서비스 추가", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (result == JOptionPane.OK_OPTION) {
+                String id = idField.getText().trim();
+                String passward = passwardField.getText().trim();
+                String position = positionField.getText().trim();
+                if (id.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "아이디를 입력하세요.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                if (passward.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "비밀번호를 입력하세요.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                if (position.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "권한을 입력하세요.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                if (!position.equals("관리자") && !position.equals("직원")) {
+                    JOptionPane.showMessageDialog(this, "권한은 '관리자' 또는 '직원'이여야 합니다.", "Error", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+
+                try {
+                    DefaultTableModel model = (DefaultTableModel) showAccountTable.getModel();
+                    model.addRow(new Object[]{id, passward, position});
+                    validInput = true;
+                } catch (NumberFormatException e) {
+                    continue;
+                }
+            } else {
+                break;
+            }
+        }
+    }//GEN-LAST:event_addButtonActionPerformed
+
+    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+        int selectedRow = showAccountTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "삭제할 행을 선택하세요.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        DefaultTableModel model = (DefaultTableModel) showAccountTable.getModel();
+        model.removeRow(selectedRow);
+    }//GEN-LAST:event_deleteButtonActionPerformed
+
+    private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
+        if (showAccountTable.getCellEditor() != null) {
+            showAccountTable.getCellEditor().stopCellEditing();
+        }
+        new ChangeSaveFile(showAccountTable, accountFile);
+    }//GEN-LAST:event_saveButtonActionPerformed
+    
+    private void loadAccountList() {
+        DefaultTableModel accountModel = (DefaultTableModel) showAccountTable.getModel();
+        account.AccountLoad(accountModel);
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -141,11 +272,11 @@ public class AccountManagementFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
-    private javax.swing.JButton changeButton;
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton endButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton saveButton;
     private javax.swing.JTable showAccountTable;
     // End of variables declaration//GEN-END:variables
 }

@@ -39,7 +39,6 @@ public class RoomInfoLoad {
                 while ((line = br.readLine()) != null) {
                 String[] data = line.split("\t");
                 roominfo.add(new RoomInfo(data[0], data[1], data[2]));
-                    System.out.println(data[0]);
             }
         }catch(IOException e){
             e.printStackTrace();

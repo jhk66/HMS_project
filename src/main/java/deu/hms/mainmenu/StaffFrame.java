@@ -4,6 +4,10 @@
  */
 package deu.hms.mainmenu;
 
+import deu.hms.login.LogInFrame;
+import deu.hms.restaurant.RestaurantFrame;
+import deu.hms.roomservice.RoomServiceFrame;
+
 /**
  *
  * @author choun
@@ -15,6 +19,7 @@ public class StaffFrame extends javax.swing.JFrame {
      */
     public StaffFrame() {
         initComponents();
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -34,6 +39,7 @@ public class StaffFrame extends javax.swing.JFrame {
         goRestaurant = new javax.swing.JButton();
         goRoomService = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -43,16 +49,43 @@ public class StaffFrame extends javax.swing.JFrame {
         jLabel2.setText("고객관리");
 
         goReservationButton.setText("예약 관리");
+        goReservationButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                goReservationButtonActionPerformed(evt);
+            }
+        });
 
         goCheckInOutButton.setText("<html>체크인<br>체크아웃</html>");
 
         jLabel3.setText("호텔 서비스");
 
         goRestaurant.setText("식사");
+        goRestaurant.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                goRestaurantActionPerformed(evt);
+            }
+        });
 
         goRoomService.setText("룸서비스");
+        goRoomService.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                goRoomServiceActionPerformed(evt);
+            }
+        });
 
         jButton5.setText("로그아웃");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("닫기");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -82,6 +115,8 @@ public class StaffFrame extends javax.swing.JFrame {
                 .addContainerGap(57, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton5)
                 .addGap(15, 15, 15))
         );
@@ -103,12 +138,38 @@ public class StaffFrame extends javax.swing.JFrame {
                     .addComponent(goRestaurant, javax.swing.GroupLayout.DEFAULT_SIZE, 61, Short.MAX_VALUE)
                     .addComponent(goRoomService, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
-                .addComponent(jButton5)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void goRestaurantActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goRestaurantActionPerformed
+        RestaurantFrame RF = new RestaurantFrame();
+        RF.setVisible(true);
+    }//GEN-LAST:event_goRestaurantActionPerformed
+
+    private void goRoomServiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goRoomServiceActionPerformed
+        RoomServiceFrame RSF = new RoomServiceFrame();
+        RSF.setVisible(true);
+    }//GEN-LAST:event_goRoomServiceActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        LogInFrame LoginF = new LogInFrame();
+        LoginF.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void goReservationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goReservationButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_goReservationButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -150,6 +211,7 @@ public class StaffFrame extends javax.swing.JFrame {
     private javax.swing.JButton goReservationButton;
     private javax.swing.JButton goRestaurant;
     private javax.swing.JButton goRoomService;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
